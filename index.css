@@ -1,0 +1,12 @@
+.command-stdout,
+.command-stderr {
+  background: #16171a;
+  padding: 1rem;
+  font-family: 'Input', 'Menlo', monospace;
+  font-size: 12px;
+  color: #fff;
+}
+
+.command-stderr {
+  color: #c82829;
+}

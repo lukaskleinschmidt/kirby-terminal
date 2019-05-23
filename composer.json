@@ -1,0 +1,23 @@
+{
+    "name": "lukaskleinschmidt/tasks",
+    "description": "",
+    "type": "kirby-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lukas Kleinschmidt",
+            "email": "you@example.com"
+        }
+    ],
+    "require": {
+        "getkirby/composer-installer": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "LukasKleinschmidt\\Tasks\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

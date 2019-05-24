@@ -1,5 +1,7 @@
 <?php
 
+use Kirby\Toolkit\I18n;
+
 @include_once __DIR__ . '/vendor/autoload.php';
 @include_once __DIR__ . '/helpers.php';
 
@@ -14,11 +16,12 @@ Kirby::plugin('lukaskleinschmidt/tasks', [
 
                 return command("rsync -avz --chown=www-data:www-data $root/$path root@46.101.99.252:/var/www/html/natucate/content/$path --delete");
             },
-            'test-string' => 'npm audit fix',
-            'test-command' => command('npm -v'),
+            'test-string' => 'npm -v',
             'test-closure' => function ($model) {
                 return command('npm -v');
             },
+            'test-command' => command('npm run build', kirby()->root('index') . '/test'),
+            'test-command' => command('php -f test.php', __DIR__),
         ]
     ],
     'sections' => [
@@ -26,7 +29,10 @@ Kirby::plugin('lukaskleinschmidt/tasks', [
             'props' => [
                 'command' => function (string $command = null): string {
                     return $command;
-                }
+                },
+                'text' => function ($text = null): string {
+                    return I18n::translate($text, $text);
+                },
             ],
             'computed' => [
                 'endpoint' => function (): string {

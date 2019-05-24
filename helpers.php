@@ -12,13 +12,18 @@ use LukasKleinschmidt\Tasks\Task;
  */
 function task($command, $model = null): Task
 {
+    // Try to find a registered command by name
+    try {
+        $commands = kirby()->option('lukaskleinschmidt.tasks.commands');
+        $command = $commands[$command] ?? null;
+    } catch (\Exception $e) {
+
+    }
+
+    // Passthru valid commands
     if (is_a($command, 'LukasKleinschmidt\Tasks\Command') === true) {
         return new Task($command);
     }
-
-    // Get all registered commands
-    $commands = kirby()->option('lukaskleinschmidt.tasks.commands');
-    $command  = $commands[$command] ?? null;
 
     // Create a new command object
     if (is_string($command) == true) {

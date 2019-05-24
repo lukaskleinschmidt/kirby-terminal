@@ -5,10 +5,12 @@ panel.plugin('lukaskleinschmidt/tasks', {
         return {
           command: null,
           endpoint: null,
+          headline: null,
           path: null,
           status: null,
           stdout: null,
           stderr: null,
+          text: null,
         }
       },
       computed: {
@@ -23,17 +25,30 @@ panel.plugin('lukaskleinschmidt/tasks', {
           }
 
           return parts.join('/');
+        },
+        icon: function () {
+          if (this.status) {
+            return 'loader';
+          }
+
+          return 'circle-outline';
         }
       },
       created: function () {
         this.load().then(response => {
           this.command = response.command;
           this.endpoint = response.endpoint;
+          this.headline = response.headline;
           this.path = response.path;
           this.status = response.status.status;
           this.stdout = response.status.stdout;
           this.stderr = response.status.stderr;
+          this.text = response.text;
         });
+      },
+      mounted: function () {
+        this.$refs.stdout.$refs.input.readOnly = true;
+        // this.$refs.stderr.$refs.input.readOnly = true;
       },
       watch: {
         status: function (status) {
@@ -51,7 +66,7 @@ panel.plugin('lukaskleinschmidt/tasks', {
         run: function () {
 
           // Close the confirm dialog
-          this.$refs.dialog.close();
+          // this.$refs.dialog.close();
 
           this.$api.post(this.url).then(this.update);
         },
@@ -70,23 +85,43 @@ panel.plugin('lukaskleinschmidt/tasks', {
             }
           });
         },
+        onClick: function () {
+          this.status ? this.kill() : this.run();
+        }
       },
       template: `
         <section class="command-section">
-          <k-headline>Test</k-headline>
-          <k-text>Lorem Ipsum …</k-text>
+          <k-headline>{{ headline }}</k-headline>
+          <k-text>{{ text }}</k-text>
 
           <br />
-          <k-button @click="$refs.dialog.open()" icon="wand" :disabled="status">Run</k-button>
+
+          <k-button @click="onClick" :icon="icon">
+            {{ status ? 'Stop' : 'Start' }}
+          </k-button>
+
           <br />
           <br />
+
+          <nav>
+            <k-button>
+              Output
+              <k-icon type="circle-outline" />
+            </k-button>
+            <k-button>
+              Errors
+              <k-icon type="circle" />
+            </k-button>
+          </nav>
+
 
           <div class="command-stdout">
-            <k-input v-model="stdout" name="text" type="textarea" :buttons="false" :disabled="true" />
+            <!--<div style="white-space: pre-wrap" v-html="stdout" />-->
+            <k-textarea-input v-model="stdout" :buttons="false" ref="stdout" />
           </div>
 
           <div class="command-stderr">
-            <k-input v-model="stderr" name="text" type="textarea" :buttons="false" :disabled="true" />
+            <k-textarea-input v-model="stderr" :buttons="false" ref="stderr" />
           </div>
 
           <k-dialog ref="dialog" icon="upload" @submit="run">

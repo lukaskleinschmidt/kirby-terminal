@@ -91,7 +91,7 @@ class Command
     {
         return [
             'cmd' => $this->cmd,
-            'cwd' => $this->cwd,
+            'cwd' => $this->cwd
         ];
     }
 }

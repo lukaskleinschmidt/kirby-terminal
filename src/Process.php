@@ -11,7 +11,7 @@ class Process
      */
     public static function isWindows(): bool
     {
-        return substr(strtoupper(PHP_OS), 0, 3) === 'WIN';
+        return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
     }
 
     /**
@@ -20,7 +20,7 @@ class Process
      * @param  int    $pid
      * @return string
      */
-    public static function kill(int $pid)
+    public static function kill(int $pid): ?string
     {
         if (static::isWindows()) {
             return shell_exec("taskkill /pid $pid -t -f");

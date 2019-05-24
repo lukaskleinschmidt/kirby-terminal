@@ -7,6 +7,47 @@
   color: #fff;
 }
 
+.command-section textarea {
+  line-height: 1.15;
+}
+
 .command-stderr {
   color: #c82829;
+}
+
+.command-section .k-icon-loader {
+  animation: Spin .9s linear infinite;
+}
+
+.command-section nav {
+  background: #16171a;
+  color: #fff;
+  border-bottom: 1px solid #2d2f36;
+}
+
+.command-section nav button {
+  padding: 8px 15px 12px 35px;
+  border-right: 1px solid #2d2f36;
+}
+
+/* .command-section nav button + button {
+  color: #4271ae;
+  color: #c82829;
+  color: #d16464;
+  color: #fff;
+  font-weight: 700;
+} */
+
+.command-section nav button + button .k-icon {
+  color: #4271ae;
+}
+
+.command-section nav .k-icon {
+  position: absolute;
+  left: 15px;
+  top: 13px;
+  width: 8px;
+
+  color: #777;
+
 }

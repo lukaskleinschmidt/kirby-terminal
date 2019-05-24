@@ -67,7 +67,7 @@ class Task
     {
         return array_merge($this->toArray(), [
             'command' => $this->command(),
-            'pid'     => $this->pid(),
+            'pid'     => $this->pid()
         ]);
     }
 
@@ -86,12 +86,12 @@ class Task
      *
      * @return self
      */
-    public function kill()
+    public function kill(): self
     {
         $pid = $this->pid();
 
         // Nothing to kill if there is no pid
-        if (is_null($pid === true)) {
+        if (is_null($pid) === true) {
             return $this;
         }
 
@@ -103,9 +103,9 @@ class Task
     /**
      * Returns the id for the currently running process
      *
-     * @return mixed
+     * @return int|null
      */
-    public function pid()
+    public function pid(): ?int
     {
         $pid = $this->cache->get($this->hash);
 
@@ -124,7 +124,7 @@ class Task
      *
      * @return self
      */
-    public function run()
+    public function run(): self
     {
         if ($this->status() === true) {
             throw new \Exception('Process is already running');
@@ -134,7 +134,7 @@ class Task
         F::write($this->stdout, '');
         F::write($this->stderr, '');
 
-        $pid = Process::run($this->command, $this->stdout, $this->stderr);
+        $pid = Process::run($this->command, $this->stdout, $this->stderr, true);
 
         // Cache the processes id
         $this->cache->set($this->hash, $pid);
@@ -174,7 +174,7 @@ class Task
      *
      * @return string
      */
-    public function stderr()
+    public function stderr(): string
     {
         return F::read($this->stderr) ?: '';
     }

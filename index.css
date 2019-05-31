@@ -1,36 +1,47 @@
-.command-stdout,
-.command-stderr {
-  background: #16171a;
-  padding: 1rem;
+.task-stdout,
+.task-stderr {
   font-family: 'Input', 'Menlo', monospace;
   font-size: 12px;
-  color: #fff;
 }
 
-.command-section textarea {
+.task-section textarea {
   line-height: 1.15;
+  padding: 1rem;
 }
 
-.command-stderr {
+.task-stderr {
   color: #c82829;
 }
 
-.command-section .k-icon-loader {
+.task-section .k-icon-loader {
   animation: Spin .9s linear infinite;
 }
 
-.command-section nav {
-  background: #16171a;
-  color: #fff;
+.task-section nav {
   border-bottom: 1px solid #2d2f36;
+  display: flex;
+
+  border-color: #efefef;
 }
 
-.command-section nav button {
-  padding: 8px 15px 12px 35px;
+.task-section nav button {
+  padding: 8px 20px 12px 20px;
   border-right: 1px solid #2d2f36;
+
+  border-color: #efefef;
 }
 
-/* .command-section nav button + button {
+.task-console {
+  border-radius: 1px;
+  background: #16171a;
+  background: #fff;
+  overflow: hidden;
+  color: #fff;
+  color: #16171a;
+  box-shadow: 0 2px 5px rgba(22,23,26,.05);
+}
+
+/* .task-section nav button + button {
   color: #4271ae;
   color: #c82829;
   color: #d16464;
@@ -38,15 +49,18 @@
   font-weight: 700;
 } */
 
-.command-section nav button + button .k-icon {
+.task-section nav button + button .k-icon {
   color: #4271ae;
 }
 
-.command-section nav .k-icon {
+.task-section nav .k-icon {
+  display: none;
+
   position: absolute;
-  left: 15px;
-  top: 13px;
+  height: 8px;
   width: 8px;
+  left: 18px;
+  top: 17px;
 
   color: #777;
 

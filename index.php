@@ -9,29 +9,20 @@ Kirby::plugin('lukaskleinschmidt/tasks', [
     'options' => [
         'cache' => true,
         'endpoint' => 'task',
-        'commands' => [
-            // 'deploy' => function ($model) {
-            //     $root = kirby()->root('content');
-            //     $path = $model->diruri();
+        'scripts' => [
+            // 'deploy' => function () {
+            //     $root = $this->kirby()->root('content');
+            //     $path = $this->model()->diruri();
             //
-            //     return command("rsync -avz --chown=www-data:www-data $root/$path root@46.101.99.252:/var/www/html/natucate/content/$path --delete");
+            //     return script("rsync -avz --chown=www-data:www-data $root/$path root@46.101.99.252:/var/www/html/natucate/content/$path --delete");
             // },
-            // 'test-string' => 'npm -v',
-            // 'test-closure' => function ($model) {
-            //     return command('npm -v');
-            // },
-            // 'test-command' => command('npm -v'),
-
-            'npm' => command('npm run build --color=always', kirby()->root('index') . '/test'),
-            'php' => command('php -f test.php', __DIR__),
+            'npm' => script('npm run build', kirby()->root('index') . '/test'),
+            'php' => script('php -f test.php', __DIR__),
         ]
     ],
     'sections' => [
         'task' => [
             'props' => [
-                'command' => function (string $command = null): string {
-                    return $command;
-                },
                 'delay' => function ($delay = 1000): int {
                     return $delay;
                 },
@@ -47,11 +38,8 @@ Kirby::plugin('lukaskleinschmidt/tasks', [
                     // return option('lukaskleinschmidt.tasks.endpoint');
                     return option('lukaskleinschmidt.tasks.endpoint', 'task');
                 },
-                'path' => function (): string {
-                    return $this->model()->id() ?? '';
-                },
                 'status' => function (): array {
-                    return task($this->command(), $this->model())->toArray();
+                    return task($this->run(), $this->model())->toArray();
                 }
             ]
         ]
@@ -63,31 +51,64 @@ Kirby::plugin('lukaskleinschmidt/tasks', [
             // have to define the default value here
             // $endpoint = $kirby->option('lukaskleinschmidt.tasks.endpoint');
             $endpoint = $kirby->option('lukaskleinschmidt.tasks.endpoint', 'task');
-            $pattern = $endpoint . '/(:any)/(:all?)';
+
+            $task = function () use ($kirby) {
+                $task = task($this->run(), $this->model());
+
+                if ($kirby->request()->is('POST') && $action = get('action')) {
+                    switch ($action) {
+                        case 'kill':
+                            $task->kill();
+                            break;
+
+                        case 'run':
+                            $task->run();
+                            break;
+                    }
+                }
+
+                return $task->toArray();
+            };
 
             return [
                 [
-                    'pattern' => $pattern,
-                    'method'  => 'DELETE',
+                    'pattern' => "(:all)/files/(:any)/$endpoint/(:any)",
+                    'method'  => 'GET|POST',
                     'auth'    => true,
-                    'action'  => function ($command, $path = null): array {
-                        return task($command, $path)->kill()->toArray();
+                    'action'  => function (string $path, string $filename, string $sectionName) use ($task) {
+                        if ($section = $this->file($path, $filename)->blueprint()->section($sectionName)) {
+                            return $task->call($section);
+                        }
                     }
                 ],
                 [
-                    'pattern' => $pattern,
-                    'method'  => 'GET',
+                    'pattern' => "pages/(:any)/$endpoint/(:any)",
+                    'method'  => 'GET|POST',
                     'auth'    => true,
-                    'action'  => function ($command, $path = null): array {
-                        return task($command, $path)->toArray();
+                    'action'  => function (string $id, string $sectionName) use ($task) {
+                        if ($section = $this->page($id)->blueprint()->section($sectionName)) {
+                            return $task->call($section);
+                        }
                     }
                 ],
                 [
-                    'pattern' => $pattern,
-                    'method'  => 'POST',
+                    'pattern' => "site/$endpoint/(:any)",
+                    'method'  => 'GET|POST',
                     'auth'    => true,
-                    'action'  => function ($command, $path = null): array {
-                        return task($command, $path)->run()->toArray();
+                    'action'  => function (string $sectionName) use ($task) {
+                        if ($section = $this->site()->blueprint()->section($sectionName)) {
+                            return $task->call($section);
+                        }
+                    }
+                ],
+                [
+                    'pattern' => "users/(:any)/$endpoint/(:any)",
+                    'method'  => 'GET|POST',
+                    'auth'    => true,
+                    'action'  => function (string $id, string $sectionName) use ($task) {
+                        if ($section = $this->user($id)->blueprint()->section($sectionName)) {
+                            return $task->call($section);
+                        }
                     }
                 ]
             ];

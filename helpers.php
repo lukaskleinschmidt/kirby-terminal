@@ -1,66 +1,51 @@
 <?php
 
-use LukasKleinschmidt\Tasks\Command;
+use LukasKleinschmidt\Tasks\Script;
 use LukasKleinschmidt\Tasks\Task;
 
 /**
  * Creates a new Task instance
  *
- * @param  mixed  $name
+ * @param  mixed  $script
  * @param  mixed  $model
  * @return Task
  */
-function task($command, $model = null): Task
+function task($script, $model = null): Task
 {
-    // Try to find a registered command by name
+    // Try to find a registered script by name
     try {
-        $commands = kirby()->option('lukaskleinschmidt.tasks.commands');
-        $command = $commands[$command] ?? null;
+        $scripts = kirby()->option('lukaskleinschmidt.tasks.scripts');
+        $script = $scripts[$script] ?? null;
     } catch (\Exception $e) {
 
     }
 
-    // Passthru valid commands
-    if (is_a($command, 'LukasKleinschmidt\Tasks\Command') === true) {
-        return new Task($command);
+    // Passthru valid scripts
+    if (is_a($script, 'LukasKleinschmidt\Tasks\Script') === true) {
+        return new Task($script);
     }
 
-    // Create a new command object
-    if (is_string($command) == true) {
-        return new Task(command($command));
+    // Create a new script object
+    if (is_string($script) == true) {
+        return new Task(script($script));
     }
 
-    // Create a command with an closure
-    if (is_callable($command) === true) {
-
-        // Try to resolve the model where the task was executed from
-        if (is_null($model) === true) {
-            $model = site();
-        } else if (is_string($model) === true) {
-            $parts = explode('/', $model);
-
-            // Find page or draft recursively
-            foreach ($parts as $path) {
-                $page = ($page ?? site())->findPageOrDraft($path);
-            }
-
-            $model = $page;
-        }
-
-        return new Task($command($model));
+    // Create a script with a closure
+    if (is_callable($script) === true) {
+        return new Task($script->call($model));
     }
 
     throw new \Exception('Task could not be created');
 }
 
 /**
- * Creates a new Command instance
+ * Creates a new Script instance
  *
  * @param  string  $cmd
  * @param  string  $cwd
- * @return Command
+ * @return Script
  */
-function command(string $cmd, string $cwd = null): Command
+function script(string $cmd, string $cwd = null): Script
 {
-    return new Command($cmd, $cwd ?? kirby()->root('index'));
+    return new Script($cmd, $cwd ?? kirby()->root('index'));
 }

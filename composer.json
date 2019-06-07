@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "LukasKleinschmidt\\Tasks\\": "lib/"
+            "LukasKleinschmidt\\Tasks\\": "src/"
         }
     },
     "config": {

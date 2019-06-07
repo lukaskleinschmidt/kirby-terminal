@@ -2,7 +2,7 @@
 
 namespace LukasKleinschmidt\Tasks;
 
-class Command
+class Script
 {
     /**
      * The command
@@ -19,7 +19,7 @@ class Command
     protected $cwd;
 
     /**
-     * Creates a new Command instance
+     * Creates a new Script instance
      *
      * @param string $cmd
      * @param string $cwd
@@ -83,7 +83,7 @@ class Command
     }
 
     /**
-     * Returns a hash for the command at the anticipated working directory
+     * Returns a hash for the script
      *
      * @return string
      */

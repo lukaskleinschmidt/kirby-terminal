@@ -42,7 +42,7 @@ class Process
      */
     protected static function spawn(string $cmd, string $cwd, string $stdout, string $stderr)
     {
-        // Execute the command
+        // Execute the script
         $process = proc_open($cmd, [
             ['pipe', 'r'],
             ['file', $stdout, 'w'],
@@ -59,34 +59,34 @@ class Process
     /**
      * Run a platform agnostic background process
      *
-     * @param  Command $command
+     * @param  Script  $script
      * @param  string  $stdout
      * @param  string  $stderr
      * @return int
      */
-    public static function run(Command $command, string $stdout = '/dev/null', string $stderr = '/dev/null'): int
+    public static function run(Script $script, string $stdout = '/dev/null', string $stderr = '/dev/null'): int
     {
         if (static::isWindows()) {
-            return static::runWindows($command, $stdout, $stderr);
+            return static::runWindows($script, $stdout, $stderr);
         }
 
-        return static::runUnix($command, $stdout, $stderr);
+        return static::runUnix($script, $stdout, $stderr);
     }
 
     /**
      * Run a background process on unix-like platforms
      *
-     * @param  Command $command
+     * @param  Script  $script
      * @param  string  $stdout
      * @param  string  $stderr
      * @return int
      */
-    protected static function runUnix(Command $command, string $stdout, string $stderr): int
+    protected static function runUnix(Script $script, string $stdout, string $stderr): int
     {
         // Spawn a new process
         $process = static::spawn(
-            $command->toUnix(),
-            $command->cwd(),
+            $script->toUnix(),
+            $script->cwd(),
             $stdout,
             $stderr
         );
@@ -101,17 +101,17 @@ class Process
     /**
      * Run a background process on windows platforms
      *
-     * @param  Command $command
+     * @param  Script  $script
      * @param  string  $stdout
      * @param  string  $stderr
      * @return int
      */
-    protected static function runWindows(Command $command, string $stdout, string $stderr): int
+    protected static function runWindows(Script $script, string $stdout, string $stderr): int
     {
         // Spawn a new process
         $process = static::spawn(
-            $command->toWindows(),
-            $command->cwd(),
+            $script->toWindows(),
+            $script->cwd(),
             $stdout,
             $stderr
         );

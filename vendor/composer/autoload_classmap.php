@@ -10,7 +10,7 @@ return array(
     'Kirby\\ComposerInstaller\\Installer' => $vendorDir . '/getkirby/composer-installer/src/ComposerInstaller/Installer.php',
     'Kirby\\ComposerInstaller\\Plugin' => $vendorDir . '/getkirby/composer-installer/src/ComposerInstaller/Plugin.php',
     'Kirby\\ComposerInstaller\\PluginInstaller' => $vendorDir . '/getkirby/composer-installer/src/ComposerInstaller/PluginInstaller.php',
-    'LukasKleinschmidt\\Tasks\\Command' => $baseDir . '/lib/Command.php',
-    'LukasKleinschmidt\\Tasks\\Process' => $baseDir . '/lib/Process.php',
-    'LukasKleinschmidt\\Tasks\\Task' => $baseDir . '/lib/Task.php',
+    'LukasKleinschmidt\\Tasks\\Command' => $baseDir . '/src/Command.php',
+    'LukasKleinschmidt\\Tasks\\Process' => $baseDir . '/src/Process.php',
+    'LukasKleinschmidt\\Tasks\\Task' => $baseDir . '/src/Task.php',
 );

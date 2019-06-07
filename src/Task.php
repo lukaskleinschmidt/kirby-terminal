@@ -14,18 +14,18 @@ class Task
     protected $cache;
 
     /**
-     * The command
-     *
-     * @var Command
-     */
-    protected $command;
-
-    /**
-     * Hash for the command
+     * Hash for the script
      *
      * @var string
      */
     protected $hash;
+
+    /**
+     * The script
+     *
+     * @var Script
+     */
+    protected $script;
 
     /**
      * The path for the output file
@@ -42,15 +42,15 @@ class Task
     protected $stderr;
 
     /**
-     * Creates a new Command instance
+     * Creates a new Task instance
      *
-     * @param Command $command
+     * @param Script $script
      */
-    public function __construct(Command $command)
+    public function __construct(Script $script)
     {
-        $this->command = $command;
+        $this->script = $script;
         $this->cache = kirby()->cache('lukaskleinschmidt.tasks');
-        $this->hash = $command->hash();
+        $this->hash = $script->hash();
 
         $root = kirby()->root('cache') . '/lukaskleinschmidt/tasks/' . $this->hash;
 
@@ -66,19 +66,19 @@ class Task
     public function __debuginfo(): array
     {
         return array_merge($this->toArray(), [
-            'command' => $this->command(),
-            'pid'     => $this->pid()
+            'script' => $this->script(),
+            'pid'    => $this->pid()
         ]);
     }
 
     /**
-     * Returns the command instance
+     * Returns the script instance
      *
-     * @return Command
+     * @return Script
      */
-    public function command(): Command
+    public function script(): Script
     {
-        return $this->command;
+        return $this->script;
     }
 
     /**
@@ -134,7 +134,7 @@ class Task
         F::write($this->stdout, '');
         F::write($this->stderr, '');
 
-        $pid = Process::run($this->command, $this->stdout, $this->stderr, true);
+        $pid = Process::run($this->script, $this->stdout, $this->stderr, true);
 
         // Cache the processes id
         $this->cache->set($this->hash, $pid);

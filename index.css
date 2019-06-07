@@ -128,7 +128,6 @@
   text-decoration: line-through;
 }
 
-
 .tasks-terminal .term-fg-black {
   color: var(--black);
 }
@@ -192,7 +191,6 @@
 .tasks-terminal .term-fg-bright-white {
   color: var(--bright-white);
 }
-
 
 .tasks-terminal .term-bg-black {
   background: var(--black);

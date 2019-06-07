@@ -2,6 +2,8 @@
 
 namespace LukasKleinschmidt\Tasks;
 
+use resource;
+
 class Process
 {
     /**
@@ -30,6 +32,31 @@ class Process
     }
 
     /**
+     * Spawn a new process
+     *
+     * @param  string   $cmd
+     * @param  string   $cwd
+     * @param  string   $stdout
+     * @param  string   $stderr
+     * @return resource
+     */
+    protected static function spawn(string $cmd, string $cwd, string $stdout, string $stderr)
+    {
+        // Execute the command
+        $process = proc_open($cmd, [
+            ['pipe', 'r'],
+            ['file', $stdout, 'w'],
+            ['file', $stderr, 'w'],
+        ], $pipes, $cwd);
+
+        if (is_resource($process) === false) {
+            throw new \Exception('Unable to spawn process');
+        }
+
+        return $process;
+    }
+
+    /**
      * Run a platform agnostic background process
      *
      * @param  Command $command
@@ -41,9 +68,9 @@ class Process
     {
         if (static::isWindows()) {
             return static::runWindows($command, $stdout, $stderr);
-        } else {
-            return static::runNix($command, $stdout, $stderr);
         }
+
+        return static::runUnix($command, $stdout, $stderr);
     }
 
     /**
@@ -54,13 +81,21 @@ class Process
      * @param  string  $stderr
      * @return int
      */
-    public static function runNix(Command $command, string $stdout, string $stderr): int
+    protected static function runUnix(Command $command, string $stdout, string $stderr): int
     {
-        // Change working directory
-        chdir($command->cwd());
+        // Spawn a new process
+        $process = static::spawn(
+            $command->toUnix(),
+            $command->cwd(),
+            $stdout,
+            $stderr
+        );
 
-        // Execute the command
-        return (int) shell_exec("$command > $stdout 2> $stderr & echo $!");
+        $status = proc_get_status($process);
+
+        proc_close($process);
+
+        return (int) $status['pid'];
     }
 
     /**
@@ -71,18 +106,15 @@ class Process
      * @param  string  $stderr
      * @return int
      */
-    public static function runWindows(Command $command, string $stdout, string $stderr): int
+    protected static function runWindows(Command $command, string $stdout, string $stderr): int
     {
-        // Execute the command
-        $process = proc_open("start /b $command", [
-            ['pipe', 'r'],
-            ['file', $stdout, 'w'],
-            ['file', $stderr, 'w'],
-        ], $pipes, $command->cwd());
-
-        if (is_resource($process) === false) {
-            throw new \Exception('Unable to launch a background process');
-        }
+        // Spawn a new process
+        $process = static::spawn(
+            $command->toWindows(),
+            $command->cwd(),
+            $stdout,
+            $stderr
+        );
 
         $status = proc_get_status($process);
 
@@ -114,8 +146,8 @@ class Process
             $result = array_filter(explode(' ', $output));
 
             return count($result) > 0 && $pid == reset($result);
-        } else {
-            return posix_getsid($pid) !== false;
         }
+
+        return posix_getsid($pid) !== false;
     }
 }

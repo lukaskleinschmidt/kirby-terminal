@@ -43,13 +43,33 @@ class Command
     }
 
     /**
-     * Returns the command
+     * Returns the cmd
      *
      * @return string
      */
     public function cmd(): string
     {
         return $this->cmd;
+    }
+
+    /**
+     * Returns the unix background cmd
+     *
+     * @return string
+     */
+    public function toUnix(): string
+    {
+        return "$this->cmd & echo $!";
+    }
+
+    /**
+     * Returns the windows background cmd
+     *
+     * @return string
+     */
+    public function toWindows(): string
+    {
+        return "start /b $this->cmd";
     }
 
     /**

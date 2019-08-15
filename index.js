@@ -186,6 +186,13 @@ panel.plugin('lukaskleinschmidt/tasks', {
           this.status = response.status;
           this.stderr = response.stderr;
           this.stdout = response.stdout;
+
+          // Switch to most recent activity once
+          if (! this.stdout && this.stderr) {
+            this.show = 'stderr';
+          } else if (! this.stderr && this.stdout) {
+            this.show = 'stdout';
+          }
         },
         handleSubmit() {
           this.status ? this.kill() : this.run();
@@ -238,7 +245,7 @@ panel.plugin('lukaskleinschmidt/tasks', {
           <div class="tasks-terminal">
             <nav>
               <k-button @click="show = 'stdout'">Output</k-button>
-              <k-button @click="show = 'stderr'">Errors</k-button>
+              <k-button @click="show = 'stderr'" :disabled="! stderr">Errors</k-button>
             </nav>
             <pre ref="output"><code v-html="output" /></pre>
           </div>

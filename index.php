@@ -15,7 +15,8 @@ Kirby::plugin('lukaskleinschmidt/tasks', [
                 $root = $this->kirby()->root('content');
                 $path = $this->model()->diruri();
 
-                return script("rsync -avz --chown=www-data:www-data $root/$path root@46.101.99.252:/var/www/html/natucate/content/$path --delete");
+                // return script("rsync -avz --chown=www-data:www-data $root/$path root@46.101.99.252:/var/www/html/natucate/content/$path --delete");
+                return script("rsync -avz --chown=www-data:www-data $root/$path $root/../content-save/$path --delete");
             },
             'npm' => script('npm run build', kirby()->root('index') . '/test'),
             'php' => script('php -f test.php', __DIR__),

@@ -53,26 +53,6 @@ class Script
     }
 
     /**
-     * Returns the unix background cmd
-     *
-     * @return string
-     */
-    public function toUnix(): string
-    {
-        return "$this->cmd & echo $!";
-    }
-
-    /**
-     * Returns the windows background cmd
-     *
-     * @return string
-     */
-    public function toWindows(): string
-    {
-        return "start /b $this->cmd";
-    }
-
-    /**
      * Returns the anticipated working directory
      *
      * @return string

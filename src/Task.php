@@ -52,7 +52,8 @@ class Task
         $this->cache = kirby()->cache('lukaskleinschmidt.tasks');
         $this->hash = $script->hash();
 
-        $root = kirby()->root('cache') . '/lukaskleinschmidt/tasks/' . $this->hash;
+        $prefix = $this->cache->options()['prefix'] ?? 'lukaskleinschmidt/tasks';
+        $root = kirby()->root('cache') . '/' . $prefix . '/' . $this->hash;
 
         $this->stdout = $root . '.stdout';
         $this->stderr = $root . '.stderr';
@@ -112,7 +113,7 @@ class Task
         // Flush the pid so we cannot kill another process in the future with
         // the exact same pid
         if (is_null($pid) === false && Process::status($pid) === false) {
-            $this->cache->remove($this->hash);
+            // $this->cache->remove($this->hash);
             return null;
         }
 

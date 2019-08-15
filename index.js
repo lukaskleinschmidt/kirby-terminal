@@ -1,6 +1,6 @@
 function parseANSI(string) {
 
-  // Class name mapping
+  // Classname mapping
   const values = {
     1: 'term-bold',
     2: 'term-faint',
@@ -196,16 +196,7 @@ panel.plugin('lukaskleinschmidt/tasks', {
             .then(this.handleResponse);
         },
         poll() {
-          const onStart = this.$api.config.onStart;
-
-          // Make the next request silent so the loading spinner and mous loading
-          // symbol will not appear
-          this.$api.config.onStart = (requestId) => {
-            this.$api.requests.push(requestId);
-            this.$api.config.onStart = onStart;
-          };
-
-          this.$api.get(this.url).then(response => {
+          this.$api.get(this.url, null, {}, true).then(response => {
             const element = this.$refs.output;
             const { offsetHeight, scrollTop, scrollHeight} = element;
 
@@ -233,30 +224,49 @@ panel.plugin('lukaskleinschmidt/tasks', {
       },
       template: `
         <section class="tasks-section">
-          <k-headline>{{ headline }}</k-headline>
-          <k-text>{{ text }}</k-text>
 
-          <br />
+          <header class="k-section-header">
+            <k-headline>
+              {{ headline }}
+            </k-headline>
 
-          <k-button @click="handleSubmit" :icon="icon">
-            {{ status ? 'Stop' : 'Start' }}
-          </k-button>
-
-          <br />
-          <br />
+            <k-button-group v-if="true">
+              <k-button :icon="icon" @click="handleSubmit">{{ status ? 'Stop' : 'Start' }}</k-button>
+            </k-button-group>
+          </header>
 
           <div class="tasks-terminal">
             <nav>
-              <k-button @click="show = 'stdout'">
-                Output
-              </k-button>
-              <k-button @click="show = 'stderr'">
-                Errors
-              </k-button>
+              <k-button @click="show = 'stdout'">Output</k-button>
+              <k-button @click="show = 'stderr'">Errors</k-button>
             </nav>
-
             <pre ref="output"><code v-html="output" /></pre>
           </div>
+
+          <footer class="k-collection-footer">
+            <k-text
+              v-if="help"
+              theme="help"
+              class="k-collection-help"
+              v-html="help"
+            />
+          </footer>
+
+          <!--
+          <k-button @click="$refs.dialog.open()">Open Dialog</k-button>
+
+          <k-dialog
+            ref="dialog"
+            button="Ausführen"
+            theme="positive"
+            icon="wand"
+          >
+            <k-text>
+              Do you really want to delete the user:<br>
+              <strong>bastian</strong>?
+            </k-text>
+          </k-dialog>
+          -->
         </section>
       `
     }

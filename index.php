@@ -1,5 +1,6 @@
 <?php
 
+use Kirby\Http\Response;
 use Kirby\Toolkit\I18n;
 
 @include_once __DIR__ . '/vendor/autoload.php';
@@ -10,33 +11,30 @@ Kirby::plugin('lukaskleinschmidt/tasks', [
         'cache' => true,
         'endpoint' => 'task',
         'scripts' => [
-            // 'deploy' => function () {
-            //     $root = $this->kirby()->root('content');
-            //     $path = $this->model()->diruri();
-            //
-            //     return script("rsync -avz --chown=www-data:www-data $root/$path root@46.101.99.252:/var/www/html/natucate/content/$path --delete");
-            // },
+            'deploy' => function () {
+                $root = $this->kirby()->root('content');
+                $path = $this->model()->diruri();
+
+                return script("rsync -avz --chown=www-data:www-data $root/$path root@46.101.99.252:/var/www/html/natucate/content/$path --delete");
+            },
             'npm' => script('npm run build', kirby()->root('index') . '/test'),
             'php' => script('php -f test.php', __DIR__),
         ]
     ],
     'sections' => [
         'task' => [
+            'mixins' => [
+                'headline',
+                'help',
+            ],
             'props' => [
                 'delay' => function ($delay = 1000): int {
                     return $delay;
-                },
-                'text' => function ($text = null): string {
-                    return I18n::translate($text, $text);
-                },
+                }
             ],
             'computed' => [
                 'endpoint' => function (): string {
-
-                    // Until https://github.com/getkirby/kirby/issues/1791 is
-                    // fixed we have to define the default value here
-                    // return option('lukaskleinschmidt.tasks.endpoint');
-                    return option('lukaskleinschmidt.tasks.endpoint', 'task');
+                    return option('lukaskleinschmidt.tasks.endpoint');
                 },
                 'status' => function (): array {
                     return task($this->run(), $this->model())->toArray();
@@ -46,12 +44,6 @@ Kirby::plugin('lukaskleinschmidt/tasks', [
     ],
     'api' => [
         'routes' => function ($kirby) {
-
-            // Until https://github.com/getkirby/kirby/issues/1791 is fixed we
-            // have to define the default value here
-            // $endpoint = $kirby->option('lukaskleinschmidt.tasks.endpoint');
-            $endpoint = $kirby->option('lukaskleinschmidt.tasks.endpoint', 'task');
-
             $task = function () use ($kirby) {
                 $task = task($this->run(), $this->model());
 
@@ -67,8 +59,18 @@ Kirby::plugin('lukaskleinschmidt/tasks', [
                     }
                 }
 
-                return $task->toArray();
+                $body = json_encode($task->toArray());
+                $size = strlen($body);
+
+                echo Response::json($body, null, null, [
+                    'Content-Length' => $size,
+                ]);
+
+                return true;
             };
+
+            // Use the desired api endpoint
+            $endpoint = $kirby->option('lukaskleinschmidt.tasks.endpoint');
 
             return [
                 [

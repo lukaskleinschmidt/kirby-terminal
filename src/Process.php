@@ -26,34 +26,9 @@ class Process
     {
         if (static::isWindows()) {
             return shell_exec("taskkill /pid $pid -t -f");
-        } else {
-            return shell_exec("kill -9 $pid");
-        }
-    }
-
-    /**
-     * Spawn a new process
-     *
-     * @param  string   $cmd
-     * @param  string   $cwd
-     * @param  string   $stdout
-     * @param  string   $stderr
-     * @return resource
-     */
-    protected static function spawn(string $cmd, string $cwd, string $stdout, string $stderr)
-    {
-        // Execute the script
-        $process = proc_open($cmd, [
-            ['pipe', 'r'],
-            ['file', $stdout, 'w'],
-            ['file', $stderr, 'w'],
-        ], $pipes, $cwd);
-
-        if (is_resource($process) === false) {
-            throw new \Exception('Unable to spawn process');
         }
 
-        return $process;
+        return shell_exec("kill -TERM -$pid");
     }
 
     /**
@@ -83,19 +58,24 @@ class Process
      */
     protected static function runUnix(Script $script, string $stdout, string $stderr): int
     {
-        // Spawn a new process
-        $process = static::spawn(
-            $script->toUnix(),
+        $file = tmpfile();
+        $path = stream_get_meta_data($file)['uri'];
+        $cmd  = $script->cmd();
+        $cmd  = "setsid $cmd & echo $! > $path";
+
+        static::spawn(
+            $cmd,
             $script->cwd(),
             $stdout,
             $stderr
         );
 
-        $status = proc_get_status($process);
+        $size = filesize($path);
+        $pid  = fread($file, $size);
 
-        proc_close($process);
+        fclose($file);
 
-        return (int) $status['pid'];
+        return (int) $pid;
     }
 
     /**
@@ -108,21 +88,17 @@ class Process
      */
     protected static function runWindows(Script $script, string $stdout, string $stderr): int
     {
-        // Spawn a new process
-        $process = static::spawn(
-            $script->toWindows(),
+        $cmd = $script->cmd();
+        $cmd = "start /b $cmd";
+
+        // On windows the pid is the process id of the spawned shell so we have
+        // to do some more magic to get the real pid
+        $ppid = static::spawn(
+            $cmd,
             $script->cwd(),
             $stdout,
             $stderr
         );
-
-        $status = proc_get_status($process);
-
-        // On windows the pid is the process id of the spawned shell so we have
-        // to do some more magic to get the real pid
-        $ppid = $status['pid'];
-
-        proc_close($process);
 
         // Find correct pid
         $output = shell_exec("wmic process get parentprocessid, processid | find \"$ppid\"");
@@ -131,6 +107,35 @@ class Process
         array_pop($result);
 
         return (int) end($result);
+    }
+
+    /**
+     * Spawn a new process
+     *
+     * @param  string   $cmd
+     * @param  string   $cwd
+     * @param  string   $stdout
+     * @param  string   $stderr
+     * @return int
+     */
+    protected static function spawn(string $cmd, string $cwd, string $stdout, string $stderr): int
+    {
+        // Execute the script
+        $process = proc_open($cmd, [
+            ['pipe', 'r'],
+            ['file', $stdout, 'w'],
+            ['file', $stderr, 'w'],
+        ], $pipes, $cwd);
+
+        if (is_resource($process) === false) {
+            throw new \Exception('Unable to spawn process');
+        }
+
+        $status = proc_get_status($process);
+
+        proc_close($process);
+
+        return (int) $status['pid'];
     }
 
     /**

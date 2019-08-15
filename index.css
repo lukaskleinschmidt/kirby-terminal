@@ -4,11 +4,11 @@
   --tasks-section-color: #fff;
 }
 
-/* .tasks-section {
+.tasks-section {
   --tasks-section-backgrond: #fff;
   --tasks-section-border: #efefef;
   --tasks-section-color: #16171a;
-} */
+}
 
 .tasks-section .k-icon-loader {
   animation: Spin .9s linear infinite;

@@ -58,6 +58,8 @@ class Process
      */
     protected static function runUnix(Script $script, string $stdout, string $stderr): int
     {
+        // Write the actual pid to file and start a new session to make sure we
+        // are able to kill any potential child processes as well
         $file = tmpfile();
         $path = stream_get_meta_data($file)['uri'];
         $cmd  = $script->cmd();

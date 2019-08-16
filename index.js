@@ -129,13 +129,14 @@ function parseANSI(string) {
   return string;
 }
 
-panel.plugin('lukaskleinschmidt/tasks', {
+panel.plugin('lukaskleinschmidt/terminal', {
   sections: {
-    task: {
+    script: {
       data: function () {
         return {
           autoscroll: true,
           delay: null,
+          theme: null,
           endpoint: null,
           headline: null,
           show: 'stdout',
@@ -159,12 +160,12 @@ panel.plugin('lukaskleinschmidt/tasks', {
       created() {
         this.load().then(response => {
           this.delay = response.delay;
+          this.theme = response.theme;
           this.endpoint = response.endpoint;
           this.headline = response.headline;
           this.status = response.status.status;
           this.stderr = response.status.stderr;
           this.stdout = response.status.stdout;
-          this.text = response.text;
         });
       },
       watch: {
@@ -230,7 +231,7 @@ panel.plugin('lukaskleinschmidt/tasks', {
         }
       },
       template: `
-        <section class="tasks-section">
+        <section :class="['terminal-section', theme ? 'terminal-section-' + theme : '']">
 
           <header class="k-section-header">
             <k-headline>
@@ -242,10 +243,14 @@ panel.plugin('lukaskleinschmidt/tasks', {
             </k-button-group>
           </header>
 
-          <div class="tasks-terminal">
+          <div class="terminal-output">
             <nav>
-              <k-button @click="show = 'stdout'">Output</k-button>
-              <k-button @click="show = 'stderr'" :disabled="! stderr">Errors</k-button>
+              <div>
+                <k-button @click="show = 'stdout'">Output</k-button>
+              </div>
+              <div>
+                <k-button @click="show = 'stderr'" :disabled="! stderr">Errors</k-button>
+              </div>
             </nav>
             <pre ref="output"><code v-html="output" /></pre>
           </div>

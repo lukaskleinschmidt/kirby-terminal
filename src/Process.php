@@ -1,8 +1,6 @@
 <?php
 
-namespace LukasKleinschmidt\Tasks;
-
-use resource;
+namespace LukasKleinschmidt\Terminal;
 
 class Process
 {

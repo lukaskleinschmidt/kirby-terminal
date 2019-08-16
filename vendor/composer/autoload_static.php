@@ -9,7 +9,7 @@ class ComposerStaticInitc076d605bc02f3a2cd89a5768757176b
     public static $prefixLengthsPsr4 = array (
         'L' => 
         array (
-            'LukasKleinschmidt\\Tasks\\' => 24,
+            'LukasKleinschmidt\\Terminal\\' => 27,
         ),
         'K' => 
         array (
@@ -18,7 +18,7 @@ class ComposerStaticInitc076d605bc02f3a2cd89a5768757176b
     );
 
     public static $prefixDirsPsr4 = array (
-        'LukasKleinschmidt\\Tasks\\' => 
+        'LukasKleinschmidt\\Terminal\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
@@ -33,9 +33,9 @@ class ComposerStaticInitc076d605bc02f3a2cd89a5768757176b
         'Kirby\\ComposerInstaller\\Installer' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/Installer.php',
         'Kirby\\ComposerInstaller\\Plugin' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/Plugin.php',
         'Kirby\\ComposerInstaller\\PluginInstaller' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/PluginInstaller.php',
-        'LukasKleinschmidt\\Tasks\\Command' => __DIR__ . '/../..' . '/src/Command.php',
-        'LukasKleinschmidt\\Tasks\\Process' => __DIR__ . '/../..' . '/src/Process.php',
-        'LukasKleinschmidt\\Tasks\\Task' => __DIR__ . '/../..' . '/src/Task.php',
+        'LukasKleinschmidt\\Terminal\\Process' => __DIR__ . '/../..' . '/src/Process.php',
+        'LukasKleinschmidt\\Terminal\\Script' => __DIR__ . '/../..' . '/src/Script.php',
+        'LukasKleinschmidt\\Terminal\\Terminal' => __DIR__ . '/../..' . '/src/Terminal.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

@@ -1,10 +1,10 @@
 <?php
 
-namespace LukasKleinschmidt\Tasks;
+namespace LukasKleinschmidt\Terminal;
 
 use Kirby\Toolkit\F;
 
-class Task
+class Terminal
 {
     /**
      * Cache instance
@@ -42,17 +42,17 @@ class Task
     protected $stderr;
 
     /**
-     * Creates a new Task instance
+     * Creates a new Terminal instance
      *
      * @param Script $script
      */
     public function __construct(Script $script)
     {
         $this->script = $script;
-        $this->cache = kirby()->cache('lukaskleinschmidt.tasks');
+        $this->cache = kirby()->cache('lukaskleinschmidt.terminal');
         $this->hash = $script->hash();
 
-        $prefix = $this->cache->options()['prefix'] ?? 'lukaskleinschmidt/tasks';
+        $prefix = $this->cache->options()['prefix'] ?? 'lukaskleinschmidt/terminal';
         $root = kirby()->root('cache') . '/' . $prefix . '/' . $this->hash;
 
         $this->stdout = $root . '.stdout';

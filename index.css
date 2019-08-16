@@ -1,45 +1,48 @@
-.tasks-section {
-  --tasks-section-backgrond: #16171a;
-  --tasks-section-border: #2d2f36;
-  --tasks-section-color: #fff;
+.terminal-section {
+  --terminal-section-backgrond: #fff;
+  --terminal-section-border: #efefef;
+  --terminal-section-color: #16171a;
 }
 
-.tasks-section {
-  --tasks-section-backgrond: #fff;
-  --tasks-section-border: #efefef;
-  --tasks-section-color: #16171a;
+.terminal-section-dark {
+  --terminal-section-backgrond: #16171a;
+  --terminal-section-border: #2d2f36;
+  --terminal-section-color: #fff;
 }
 
-.tasks-section .k-icon-loader {
+.terminal-section .k-icon-loader {
   animation: Spin .9s linear infinite;
 }
 
-.tasks-section nav {
-  border-bottom: 1px solid var(--tasks-section-border);
+.terminal-section nav {
+  border-bottom: 1px solid var(--terminal-section-border);
   display: flex;
 }
 
-.tasks-section nav button {
-  padding: 8px 20px 12px 20px;
-  border-right: 1px solid var(--tasks-section-border);
+.terminal-section nav > div {
+  border-right: 1px solid var(--terminal-section-border);
 }
 
-.tasks-terminal {
+.terminal-section nav button {
+  padding: 8px 20px 12px 20px;
+}
+
+.terminal-output {
   border-radius: 1px;
   font-family: 'Input', 'Menlo', monospace;
-  background: var(--tasks-section-backgrond);
+  background: var(--terminal-section-backgrond);
   box-shadow: 0 2px 5px rgba(22, 23, 26, .05);
   overflow: hidden;
-  color: var(--tasks-section-color);
+  color: var(--terminal-section-color);
 }
 
-.tasks-terminal pre {
+.terminal-output pre {
   overflow-x: hidden;
   overflow-y: auto;
   height: 300px;
 }
 
-.tasks-terminal code {
+.terminal-output code {
   white-space: pre-wrap;
   line-height: 1.1;
   font-size: 12px;
@@ -47,7 +50,7 @@
   padding: 1rem;
 }
 
-.tasks-terminal {
+.terminal-output {
   --black: #16171a;
   --red: #f27979;
   --green: #c7ee6e;
@@ -104,154 +107,154 @@
 
 }
 
-.tasks-terminal .term-bold {
+.terminal-output .term-bold {
   font-weight: bold;
 }
 
-.tasks-terminal .term-faint {
+.terminal-output .term-faint {
   opacity: .5;
 }
 
-.tasks-terminal .term-italic {
+.terminal-output .term-italic {
   font-style: italic;
 }
 
-.tasks-terminal .term-underline {
+.terminal-output .term-underline {
   text-decoration: underline;
 }
 
-.tasks-terminal .term-conceal {
+.terminal-output .term-conceal {
   visibility: hidden;
 }
 
-.tasks-terminal .term-cross {
+.terminal-output .term-cross {
   text-decoration: line-through;
 }
 
-.tasks-terminal .term-fg-black {
+.terminal-output .term-fg-black {
   color: var(--black);
 }
 
-.tasks-terminal .term-fg-red {
+.terminal-output .term-fg-red {
   color: var(--red);
 }
 
-.tasks-terminal .term-fg-green {
+.terminal-output .term-fg-green {
   color: var(--green);
 }
 
-.tasks-terminal .term-fg-yellow {
+.terminal-output .term-fg-yellow {
   color: var(--yellow);
 }
 
-.tasks-terminal .term-fg-blue {
+.terminal-output .term-fg-blue {
   color: var(--blue);
 }
 
-.tasks-terminal .term-fg-magenta {
+.terminal-output .term-fg-magenta {
   color: var(--magenta);
 }
 
-.tasks-terminal .term-fg-cyan {
+.terminal-output .term-fg-cyan {
   color: var(--cyan);
 }
 
-.tasks-terminal .term-fg-white {
+.terminal-output .term-fg-white {
   color: var(--white);
 }
 
-.tasks-terminal .term-fg-bright-black {
+.terminal-output .term-fg-bright-black {
   color: var(--bright-black);
 }
 
-.tasks-terminal .term-fg-bright-red {
+.terminal-output .term-fg-bright-red {
   color: var(--bright-red);
 }
 
-.tasks-terminal .term-fg-bright-green {
+.terminal-output .term-fg-bright-green {
   color: var(--bright-green);
 }
 
-.tasks-terminal .term-fg-bright-yellow {
+.terminal-output .term-fg-bright-yellow {
   color: var(--bright-yellow);
 }
 
-.tasks-terminal .term-fg-bright-blue {
+.terminal-output .term-fg-bright-blue {
   color: var(--bright-blue);
 }
 
-.tasks-terminal .term-fg-bright-magenta {
+.terminal-output .term-fg-bright-magenta {
   color: var(--bright-magenta);
 }
 
-.tasks-terminal .term-fg-bright-cyan {
+.terminal-output .term-fg-bright-cyan {
   color: var(--bright-cyan);
 }
 
-.tasks-terminal .term-fg-bright-white {
+.terminal-output .term-fg-bright-white {
   color: var(--bright-white);
 }
 
-.tasks-terminal .term-bg-black {
+.terminal-output .term-bg-black {
   background: var(--black);
 }
 
-.tasks-terminal .term-bg-red {
+.terminal-output .term-bg-red {
   background: var(--red);
 }
 
-.tasks-terminal .term-bg-green {
+.terminal-output .term-bg-green {
   background: var(--green);
 }
 
-.tasks-terminal .term-bg-yellow {
+.terminal-output .term-bg-yellow {
   background: var(--yellow);
 }
 
-.tasks-terminal .term-bg-blue {
+.terminal-output .term-bg-blue {
   background: var(--blue);
 }
 
-.tasks-terminal .term-bg-magenta {
+.terminal-output .term-bg-magenta {
   background: var(--magenta);
 }
 
-.tasks-terminal .term-bg-cyan {
+.terminal-output .term-bg-cyan {
   background: var(--cyan);
 }
 
-.tasks-terminal .term-bg-white {
+.terminal-output .term-bg-white {
   background: var(--white);
 }
 
-.tasks-terminal .term-bg-bright-black {
+.terminal-output .term-bg-bright-black {
   background: var(--bright-black);
 }
 
-.tasks-terminal .term-bg-bright-red {
+.terminal-output .term-bg-bright-red {
   background: var(--bright-red);
 }
 
-.tasks-terminal .term-bg-bright-green {
+.terminal-output .term-bg-bright-green {
   background: var(--bright-green);
 }
 
-.tasks-terminal .term-bg-bright-yellow {
+.terminal-output .term-bg-bright-yellow {
   background: var(--bright-yellow);
 }
 
-.tasks-terminal .term-bg-bright-blue {
+.terminal-output .term-bg-bright-blue {
   background: var(--bright-blue);
 }
 
-.tasks-terminal .term-bg-bright-magenta {
+.terminal-output .term-bg-bright-magenta {
   background: var(--bright-magenta);
 }
 
-.tasks-terminal .term-bg-bright-cyan {
+.terminal-output .term-bg-bright-cyan {
   background: var(--bright-cyan);
 }
 
-.tasks-terminal .term-bg-bright-white {
+.terminal-output .term-bg-bright-white {
   background: var(--bright-white);
 }

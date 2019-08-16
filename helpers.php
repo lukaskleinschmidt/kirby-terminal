@@ -1,41 +1,41 @@
 <?php
 
-use LukasKleinschmidt\Tasks\Script;
-use LukasKleinschmidt\Tasks\Task;
+use LukasKleinschmidt\Terminal\Script;
+use LukasKleinschmidt\Terminal\Terminal;
 
 /**
- * Creates a new Task instance
+ * Creates a new Scripts instance
  *
  * @param  mixed  $script
  * @param  mixed  $model
- * @return Task
+ * @return Scripts
  */
-function task($script, $model = null): Task
+function terminal($script, $model = null): Terminal
 {
     // Try to find a registered script by name
     try {
-        $scripts = kirby()->option('lukaskleinschmidt.tasks.scripts');
+        $scripts = kirby()->option('lukaskleinschmidt.terminal.scripts');
         $script = $scripts[$script] ?? null;
     } catch (\Exception $e) {
 
     }
 
     // Passthru valid scripts
-    if (is_a($script, 'LukasKleinschmidt\Tasks\Script') === true) {
-        return new Task($script);
+    if (is_a($script, 'LukasKleinschmidt\Terminal\Script') === true) {
+        return new Terminal($script);
     }
 
     // Create a new script object
     if (is_string($script) == true) {
-        return new Task(script($script));
+        return new Terminal(script($script));
     }
 
     // Create a script with a closure
     if (is_callable($script) === true) {
-        return new Task($script->call($model));
+        return new Terminal($script->call($model));
     }
 
-    throw new \Exception('Task could not be created');
+    throw new \Exception('Terminal could not be created');
 }
 
 /**

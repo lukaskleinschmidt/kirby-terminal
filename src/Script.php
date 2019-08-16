@@ -1,6 +1,6 @@
 <?php
 
-namespace LukasKleinschmidt\Tasks;
+namespace LukasKleinschmidt\Terminal;
 
 class Script
 {

@@ -4,7 +4,7 @@ $asci = "                        ``                        \n                   
 
 $output = '';
 
-for ($i = 0; $i < 1; $i++) {
+for ($i = 0; $i < 10; $i++) {
     $bg = rand(0, 7);
     do { $fg = rand(0, 7); } while($bg === $fg);
     $output .= "[4{$bg};3{$fg}m" . $asci;

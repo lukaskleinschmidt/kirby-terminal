@@ -83,11 +83,34 @@ class Terminal
     }
 
     /**
-     * Kill the currently running process
+     * Start the process
      *
      * @return self
      */
-    public function kill(): self
+    public function start(): self
+    {
+        if ($this->status() === true) {
+            throw new \Exception('Process is already running');
+        }
+
+        // Make sure the files exist
+        F::write($this->stdout, '');
+        F::write($this->stderr, '');
+
+        $pid = Process::run($this->script, $this->stdout, $this->stderr, true);
+
+        // Cache the processes id
+        $this->cache->set($this->hash, $pid);
+
+        return $this;
+    }
+
+    /**
+     * Stop the currently running process
+     *
+     * @return self
+     */
+    public function stop(): self
     {
         $pid = $this->pid();
 
@@ -118,29 +141,6 @@ class Terminal
         }
 
         return $pid;
-    }
-
-    /**
-     * Start the process
-     *
-     * @return self
-     */
-    public function run(): self
-    {
-        if ($this->status() === true) {
-            throw new \Exception('Process is already running');
-        }
-
-        // Make sure the files exist
-        F::write($this->stdout, '');
-        F::write($this->stderr, '');
-
-        $pid = Process::run($this->script, $this->stdout, $this->stderr, true);
-
-        // Cache the processes id
-        $this->cache->set($this->hash, $pid);
-
-        return $this;
     }
 
     /**

@@ -131,47 +131,67 @@ function parseANSI(string) {
 
 panel.plugin('lukaskleinschmidt/terminal', {
   sections: {
-    script: {
+    terminal: {
       data: function () {
         return {
           autoscroll: true,
-          delay: null,
-          theme: null,
-          endpoint: null,
-          headline: null,
+          error: null,
+          isLoading: false,
+          options: {
+            delay: null,
+            endpoint: null,
+            headline: null,
+            help: null,
+            start: null,
+            stop: null,
+            theme: null,
+          },
           show: 'stdout',
-          status: null,
-          stderr: '',
-          stdout: '',
-          text: null,
+          terminal: {
+            status: null,
+            stderr: '',
+            stdout: '',
+          },
+          timestamp: null,
         }
       },
       computed: {
         icon() {
-          return this.status ? 'loader' : 'circle-outline';
+          return this.terminal.status ? 'loader' : 'circle-outline';
         },
         output() {
-          return parseANSI(this[this.show]);
+          return parseANSI(this.terminal[this.show]);
         },
         url() {
-          return [this.parent, this.endpoint, this.name].join('/');
+          return [this.parent, this.options.endpoint, this.name].join('/');
+        },
+        theme() {
+          const theme = this.options.theme;
+          return theme ? 'terminal-section-' + theme : '';
+        },
+        status() {
+          return this.terminal.status;
         }
       },
       created() {
-        this.load().then(response => {
-          this.delay = response.delay;
-          this.theme = response.theme;
-          this.endpoint = response.endpoint;
-          this.headline = response.headline;
-          this.status = response.status.status;
-          this.stderr = response.status.stderr;
-          this.stdout = response.status.stdout;
-        });
+        this.isLoading = true;
+
+        this.load()
+          .then(response => {
+            this.isLoading = false;
+            this.options   = response.options;
+            this.terminal  = response.terminal;
+          })
+          .catch(error => {
+            this.isLoading = false;
+            this.error = error.message;
+          });
       },
       watch: {
         output() {
           if (this.autoscroll) {
-            const element = this.$refs.output;
+            const element = this.$refs.output || null;
+            if (! element) return;
 
             this.$nextTick(() => {
               element.scrollTo(0, element.scrollHeight);
@@ -184,26 +204,49 @@ panel.plugin('lukaskleinschmidt/terminal', {
       },
       methods: {
         handleResponse(response) {
-          this.status = response.status;
-          this.stderr = response.stderr;
-          this.stdout = response.stdout;
+          this.terminal = response;
 
-          // Switch to most recent activity once
-          if (! this.stdout && this.stderr) {
+          const stdout = this.terminal.stdout;
+          const stderr = this.terminal.stderr;
+
+          // Switch to the tab with the first incoming output
+          if (! stdout && stderr) {
             this.show = 'stderr';
-          } else if (! this.stderr && this.stdout) {
+          } else if (! stderr && stdout) {
             this.show = 'stdout';
           }
         },
         handleSubmit() {
-          this.status ? this.kill() : this.run();
+          if (this.status === false && false) {
+            return this.$refs.dialog.open();
+          }
+
+          this.submit();
         },
-        kill() {
+        submit() {
+          if (this.$refs.dialog.isOpen) {
+            this.$refs.dialog.close();
+          }
+
+          this.status ? this.stop() : this.start();
+        },
+        stop() {
           this.$api
-            .post(this.url, { action: 'kill' })
+            .post(this.url, { action: 'stop' })
             .then(this.handleResponse);
         },
         poll() {
+          const now = Date.now();
+          const delay = this.timestamp - now + this.options.delay;
+
+          if (delay > 0) {
+
+            return setTimeout(this.poll, delay);
+          }
+
+          // Set the current timestamp
+          this.timestamp = now;
+
           this.$api.get(this.url, null, {}, true).then(response => {
             const element = this.$refs.output;
             const { offsetHeight, scrollTop, scrollHeight} = element;
@@ -216,69 +259,81 @@ panel.plugin('lukaskleinschmidt/terminal', {
 
             // Continue polling
             if (this.status === true) {
-              setTimeout(this.poll, this.delay);
+              this.poll();
             }
           });
         },
-        run() {
-          this.status = true;
-          this.stderr = '';
-          this.stdout = '';
+        start() {
+          this.terminal.status = true;
+          this.terminal.stderr = '';
+          this.terminal.stdout = '';
+
+          // Set the current timestamp
+          this.timestamp = Date.now();
 
           this.$api
-            .post(this.url, { action: 'run' })
+            .post(this.url, { action: 'start' })
             .then(this.handleResponse);
         }
       },
       template: `
-        <section :class="['terminal-section', theme ? 'terminal-section-' + theme : '']">
+        <section v-if="isLoading === false" :class="['terminal-section', theme]">
 
           <header class="k-section-header">
             <k-headline>
-              {{ headline }}
+              {{ options.headline }}
             </k-headline>
 
-            <k-button-group v-if="true">
-              <k-button :icon="icon" @click="handleSubmit">{{ status ? 'Stop' : 'Start' }}</k-button>
+            <k-button-group v-if="! error">
+              <k-button :icon="icon" @click="handleSubmit">{{ status ? options.stop : options.start }}</k-button>
             </k-button-group>
           </header>
 
-          <div class="terminal-output">
-            <nav>
-              <div>
-                <k-button @click="show = 'stdout'">Output</k-button>
-              </div>
-              <div>
-                <k-button @click="show = 'stderr'" :disabled="! stderr">Errors</k-button>
-              </div>
-            </nav>
-            <pre ref="output"><code v-html="output" /></pre>
-          </div>
+          <template v-if="error">
+            <k-box theme="negative">
+              <k-text size="small">
+                <strong>{{ $t("error.section.notLoaded", { name: name }) }}:</strong>
+                {{ error }}
+              </k-text>
+            </k-box>
+          </template>
 
-          <footer class="k-collection-footer">
-            <k-text
-              v-if="help"
-              theme="help"
-              class="k-collection-help"
-              v-html="help"
-            />
-          </footer>
+          <template v-else>
+            <div class="terminal-output">
+              <nav>
+                <div>
+                  <k-button @click="show = 'stdout'">Output</k-button>
+                </div>
+                <div>
+                  <k-button @click="show = 'stderr'" :disabled="! terminal.stderr">Errors</k-button>
+                </div>
+              </nav>
+              <pre ref="output"><code v-html="output" /></pre>
+            </div>
 
-          <!--
-          <k-button @click="$refs.dialog.open()">Open Dialog</k-button>
+            <footer class="k-collection-footer">
+              <k-text
+                v-if="options.help"
+                theme="help"
+                class="k-collection-help"
+                v-html="options.help"
+              />
+            </footer>
+          </template>
 
           <k-dialog
             ref="dialog"
-            button="Ausführen"
+            button="Start"
             theme="positive"
             icon="wand"
+            @submit="submit"
           >
             <k-text>
               Do you really want to delete the user:<br>
               <strong>bastian</strong>?
             </k-text>
           </k-dialog>
-          -->
+
         </section>
       `
     }

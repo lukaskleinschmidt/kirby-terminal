@@ -10,7 +10,7 @@ use Kirby\Exception\PermissionException;
 Kirby::plugin('lukaskleinschmidt/terminal', [
     'options' => [
         'cache' => true,
-        'endpoint' => 'script',
+        'endpoint' => 'terminal',
         'scripts' => [
             'deploy' => function () {
                 $root = $this->kirby()->root('content');
@@ -27,27 +27,47 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
         // }
     ],
     'sections' => [
-        'script' => [
+        'terminal' => [
             'mixins' => [
                 'headline',
                 'help',
             ],
             'props' => [
-                'theme' => function ($theme = null): ?string {
-                    return $theme;
-                },
-                'delay' => function ($delay = 1000): int {
+                'delay' => function (int $delay = 1000) {
                     return $delay;
+                },
+                'start' => function ($start = null) {
+                    return I18n::translate($start, $start);
+                },
+                'stop' => function ($stop = null) {
+                    return I18n::translate($stop, $stop);
+                },
+                'theme' => function (string $theme = null) {
+                    return $theme;
                 }
             ],
             'computed' => [
-                'endpoint' => function (): string {
+                'endpoint' => function () {
                     return option('lukaskleinschmidt.terminal.endpoint');
                 },
-                'status' => function (): array {
+                'status' => function () {
                     return terminal($this->script(), $this->model())->toArray();
                 }
-            ]
+            ],
+            'toArray' => function () {
+                return [
+                    'options' => [
+                        'delay'    => $this->delay,
+                        'endpoint' => $this->endpoint,
+                        'headline' => $this->headline,
+                        'help'     => $this->help,
+                        'start'    => $this->start,
+                        'stop'     => $this->stop,
+                        'theme'    => $this->theme,
+                    ],
+                    'terminal' => $this->status,
+                ];
+            }
         ]
     ],
     'api' => [
@@ -57,12 +77,12 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
 
                 if ($kirby->request()->is('POST') && $action = get('action')) {
                     switch ($action) {
-                        case 'kill':
-                            $terminal->kill();
+                        case 'stop':
+                            $terminal->stop();
                             break;
 
-                        case 'run':
-                            $terminal->run();
+                        case 'start':
+                            $terminal->start();
                             break;
                     }
                 }

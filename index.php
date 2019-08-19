@@ -36,13 +36,13 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 'delay' => function (int $delay = 1000) {
                     return $delay;
                 },
-                'start' => function ($start = null) {
+                'start' => function (?string $start = null) {
                     return I18n::translate($start, $start);
                 },
-                'stop' => function ($stop = null) {
+                'stop' => function (?string $stop = null) {
                     return I18n::translate($stop, $stop);
                 },
-                'theme' => function (string $theme = null) {
+                'theme' => function (?string $theme = null) {
                     return $theme;
                 }
             ],

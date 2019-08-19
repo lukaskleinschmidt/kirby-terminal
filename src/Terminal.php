@@ -35,13 +35,6 @@ class Terminal
     protected $stdout;
 
     /**
-     * The path for the error output file
-     *
-     * @var string
-     */
-    protected $stderr;
-
-    /**
      * Creates a new Terminal instance
      *
      * @param Script $script
@@ -56,7 +49,6 @@ class Terminal
         $root = kirby()->root('cache') . '/' . $prefix . '/' . $this->hash;
 
         $this->stdout = $root . '.stdout';
-        $this->stderr = $root . '.stderr';
     }
 
     /**
@@ -93,11 +85,10 @@ class Terminal
             throw new \Exception('Process is already running');
         }
 
-        // Make sure the files exist
+        // Make sure the file exist
         F::write($this->stdout, '');
-        F::write($this->stderr, '');
 
-        $pid = Process::run($this->script, $this->stdout, $this->stderr, true);
+        $pid = Process::run($this->script, $this->stdout);
 
         // Cache the processes id
         $this->cache->set($this->hash, $pid);
@@ -114,12 +105,16 @@ class Terminal
     {
         $pid = $this->pid();
 
-        // Nothing to kill if there is no pid
+        // Nothing to stop if there is no pid
         if (is_null($pid) === true) {
             return $this;
         }
 
         Process::kill($pid);
+
+        // Flush the pid so we cannot kill another process in the future with
+        // the exact same pid
+        $this->cache->remove($this->hash);
 
         return $this;
     }
@@ -131,16 +126,7 @@ class Terminal
      */
     public function pid(): ?int
     {
-        $pid = $this->cache->get($this->hash);
-
-        // Flush the pid so we cannot kill another process in the future with
-        // the exact same pid
-        if (is_null($pid) === false && Process::status($pid) === false) {
-            // $this->cache->remove($this->hash);
-            return null;
-        }
-
-        return $pid;
+        return $this->cache->get($this->hash);
     }
 
     /**
@@ -171,16 +157,6 @@ class Terminal
     }
 
     /**
-     * Returns the process error output
-     *
-     * @return string
-     */
-    public function stderr(): string
-    {
-        return F::read($this->stderr) ?: '';
-    }
-
-    /**
      * Converts the object into a nicely readable array
      *
      * @return array
@@ -189,8 +165,7 @@ class Terminal
     {
         return [
             'status' => $this->status(),
-            'stdout' => $this->stdout(),
-            'stderr' => $this->stderr()
+            'stdout' => $this->stdout()
         ];
     }
 }

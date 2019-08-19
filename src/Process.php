@@ -37,7 +37,7 @@ class Process
      * @param  string  $stderr
      * @return int
      */
-    public static function run(Script $script, string $stdout = '/dev/null', string $stderr = '/dev/null'): int
+    public static function run(Script $script, string $stdout = '/dev/null', ?string $stderr = null): int
     {
         if (static::isWindows()) {
             return static::runWindows($script, $stdout, $stderr);
@@ -54,7 +54,7 @@ class Process
      * @param  string  $stderr
      * @return int
      */
-    protected static function runUnix(Script $script, string $stdout, string $stderr): int
+    protected static function runUnix(Script $script, string $stdout, ?string $stderr = null): int
     {
         // Write the actual pid to file and start a new session to make sure we
         // are able to kill any potential child processes as well
@@ -86,7 +86,7 @@ class Process
      * @param  string  $stderr
      * @return int
      */
-    protected static function runWindows(Script $script, string $stdout, string $stderr): int
+    protected static function runWindows(Script $script, string $stdout, ?string $stderr = null): int
     {
         $cmd = $script->cmd();
         $cmd = "start /b $cmd";
@@ -118,13 +118,17 @@ class Process
      * @param  string   $stderr
      * @return int
      */
-    protected static function spawn(string $cmd, string $cwd, string $stdout, string $stderr): int
+    protected static function spawn(string $cmd, string $cwd, string $stdout, ?string $stderr = null): int
     {
+        if (is_null($stderr) === true) {
+            $stderr = $stdout;
+        }
+
         // Execute the script
         $process = proc_open($cmd, [
             ['pipe', 'r'],
-            ['file', $stdout, 'w'],
-            ['file', $stderr, 'w'],
+            ['file', $stdout, 'a'],
+            ['file', $stderr, 'a'],
         ], $pipes, $cwd);
 
         if (is_resource($process) === false) {

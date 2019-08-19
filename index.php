@@ -19,6 +19,7 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 return script("rsync -avz --chown=www-data:www-data $root/$path $root/../content-copy/$path --delete");
             },
             'php' => script('php -f test.php', __DIR__),
+            'npm' => script('npm run serve', kirby()->root('index') . '/test'),
         ],
         // 'gate' => function ($user) {
         //     return in_array($user->email(), [
@@ -68,6 +69,16 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                     'terminal' => $this->status,
                 ];
             }
+        ]
+    ],
+    'translations' => [
+        'en' => [
+            'lukaskleinschmidt.terminal.start' => 'Start',
+            'lukaskleinschmidt.terminal.stop'  => 'Stop',
+        ],
+        'de' => [
+            'lukaskleinschmidt.terminal.start' => 'Start',
+            'lukaskleinschmidt.terminal.stop'  => 'Stop',
         ]
     ],
     'api' => [

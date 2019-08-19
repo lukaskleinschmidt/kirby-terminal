@@ -1,4 +1,4 @@
-function parseANSI(string) {
+function parseAnsi(string) {
 
   // Classname mapping
   const values = {
@@ -123,7 +123,7 @@ function parseANSI(string) {
     return result;
   });
 
-  // Close any stray open span
+  // Close any stray open span tags
   if (stray) string += '</span>';
 
   return string;
@@ -146,10 +146,8 @@ panel.plugin('lukaskleinschmidt/terminal', {
             stop: null,
             theme: null,
           },
-          show: 'stdout',
           terminal: {
             status: null,
-            stderr: '',
             stdout: '',
           },
           timestamp: null,
@@ -160,7 +158,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
           return this.terminal.status ? 'loader' : 'circle-outline';
         },
         output() {
-          return parseANSI(this.terminal[this.show]);
+          return parseAnsi(this.terminal.stdout);
         },
         url() {
           return [this.parent, this.options.endpoint, this.name].join('/');
@@ -191,6 +189,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
         output() {
           if (this.autoscroll) {
             const element = this.$refs.output || null;
+
             if (! element) return;
 
             this.$nextTick(() => {
@@ -205,16 +204,6 @@ panel.plugin('lukaskleinschmidt/terminal', {
       methods: {
         handleResponse(response) {
           this.terminal = response;
-
-          const stdout = this.terminal.stdout;
-          const stderr = this.terminal.stderr;
-
-          // Switch to the tab with the first incoming output
-          if (! stdout && stderr) {
-            this.show = 'stderr';
-          } else if (! stderr && stdout) {
-            this.show = 'stdout';
-          }
         },
         handleSubmit() {
           if (this.status === false && false) {
@@ -222,18 +211,6 @@ panel.plugin('lukaskleinschmidt/terminal', {
           }
 
           this.submit();
-        },
-        submit() {
-          if (this.$refs.dialog.isOpen) {
-            this.$refs.dialog.close();
-          }
-
-          this.status ? this.stop() : this.start();
-        },
-        stop() {
-          this.$api
-            .post(this.url, { action: 'stop' })
-            .then(this.handleResponse);
         },
         poll() {
           const now = Date.now();
@@ -274,6 +251,21 @@ panel.plugin('lukaskleinschmidt/terminal', {
           this.$api
             .post(this.url, { action: 'start' })
             .then(this.handleResponse);
+        },
+        stop() {
+          this.$api
+            .post(this.url, { action: 'stop' })
+            .then(this.handleResponse);
+        },
+        submit() {
+          if (this.$refs.dialog.isOpen) {
+            this.$refs.dialog.close();
+          }
+
+          this.status ? this.stop() : this.start();
+        },
+        t(key) {
+          return this.options[key] || this.$t('lukaskleinschmidt.terminal.' + key);
         }
       },
       template: `
@@ -285,7 +277,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
             </k-headline>
 
             <k-button-group v-if="! error">
-              <k-button :icon="icon" @click="handleSubmit">{{ status ? options.stop : options.start }}</k-button>
+              <k-button :icon="icon" @click="handleSubmit">{{ status ? t('stop') : t('start') }}</k-button>
             </k-button-group>
           </header>
 
@@ -300,14 +292,6 @@ panel.plugin('lukaskleinschmidt/terminal', {
 
           <template v-else>
             <div class="terminal-output">
-              <nav>
-                <div>
-                  <k-button @click="show = 'stdout'">Output</k-button>
-                </div>
-                <div>
-                  <k-button @click="show = 'stderr'" :disabled="! terminal.stderr">Errors</k-button>
-                </div>
-              </nav>
               <pre ref="output"><code v-html="output" /></pre>
             </div>
 

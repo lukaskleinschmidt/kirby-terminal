@@ -14,19 +14,6 @@
   animation: Spin .9s linear infinite;
 }
 
-.terminal-section nav {
-  border-bottom: 1px solid var(--terminal-section-border);
-  display: flex;
-}
-
-.terminal-section nav > div {
-  border-right: 1px solid var(--terminal-section-border);
-}
-
-.terminal-section nav button {
-  padding: 8px 20px 12px 20px;
-}
-
 .terminal-output {
   border-radius: 1px;
   font-family: 'Input', 'Menlo', monospace;

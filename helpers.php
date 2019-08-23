@@ -13,21 +13,18 @@ use LukasKleinschmidt\Terminal\Terminal;
 function terminal($script, $model = null): Terminal
 {
     // Try to find a registered script by name
-    try {
-        $scripts = kirby()->option('lukaskleinschmidt.terminal.scripts');
-        $script = $scripts[$script] ?? null;
-    } catch (\Exception $e) {
+    $scripts = kirby()->option('lukaskleinschmidt.terminal.scripts');
+    $script = $scripts[$script] ?? $script;
 
+    // Create a new script object
+    if (is_string($script) == true) {
+        $script = script($script);
+        return new Terminal($script);
     }
 
     // Passthru valid scripts
     if (is_a($script, 'LukasKleinschmidt\Terminal\Script') === true) {
         return new Terminal($script);
-    }
-
-    // Create a new script object
-    if (is_string($script) == true) {
-        return new Terminal(script($script));
     }
 
     // Create a script with a closure

@@ -127,7 +127,7 @@ class Process
         // Execute the script
         $process = proc_open($cmd, [
             ['pipe', 'r'],
-            ['file', $stdout, 'a'],
+            ['file', $stdout, 'w'],
             ['file', $stderr, 'a'],
         ], $pipes, $cwd);
 

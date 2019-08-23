@@ -139,6 +139,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
           isLoading: false,
           options: {
             delay: null,
+            dialog: null,
             endpoint: null,
             headline: null,
             help: null,
@@ -154,22 +155,25 @@ panel.plugin('lukaskleinschmidt/terminal', {
         }
       },
       computed: {
+        dialog() {
+          return this.options.dialog || {};
+        },
         icon() {
           return this.terminal.status ? 'loader' : 'circle-outline';
         },
         output() {
           return parseAnsi(this.terminal.stdout);
         },
-        url() {
-          return [this.parent, this.options.endpoint, this.name].join('/');
+        status() {
+          return this.terminal.status;
         },
         theme() {
           const theme = this.options.theme;
           return theme ? 'terminal-section-' + theme : '';
         },
-        status() {
-          return this.terminal.status;
-        }
+        url() {
+          return [this.parent, this.options.endpoint, this.name].join('/');
+        },
       },
       created() {
         this.isLoading = true;
@@ -263,9 +267,6 @@ panel.plugin('lukaskleinschmidt/terminal', {
           }
 
           this.status ? this.stop() : this.start();
-        },
-        t(key) {
-          return this.options[key] || this.$t('lukaskleinschmidt.terminal.' + key);
         }
       },
       template: `
@@ -277,7 +278,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
             </k-headline>
 
             <k-button-group v-if="! error">
-              <k-button :icon="icon" @click="handleSubmit">{{ status ? t('stop') : t('start') }}</k-button>
+              <k-button :icon="icon" @click="handleSubmit">{{ status ? options.stop : options.start }}</k-button>
             </k-button-group>
           </header>
 
@@ -307,9 +308,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
 
           <k-dialog
             ref="dialog"
-            button="Start"
-            theme="positive"
-            icon="wand"
+            v-bind="dialog"
             @submit="submit"
           >
             <k-text>

@@ -18,6 +18,7 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
 
                 return script("rsync -avz --chown=www-data:www-data $root/$path $root/../content-copy/$path --delete");
             },
+            'npm' => script('npm run build', kirby()->root('index') . '/test'),
             'php' => script('php -f test.php', __DIR__),
         ],
         // 'gate' => function ($user) {
@@ -33,18 +34,43 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 'help',
             ],
             'props' => [
-                'delay' => function (int $delay = 1000) {
+                'delay' => function ($delay = 1000) {
                     return $delay;
                 },
-                'start' => function (?string $start = null) {
+                'dialog' => function ($dialog = null) {
+                    $options = [];
+
+                    // Disable the dialog
+                    if (is_null($dialog) === true || $dialog === false) {
+                        return false;
+                    }
+
+                    // Normalize options
+                    if (is_array($dialog) === false) {
+                        $options['text'] = $dialog;
+                    }
+
+                    // Localizable button
+                    if ($value = $dialog['button'] ?? null) {
+                        $options['button'] = I18n::translate($value, $value);
+                    }
+
+                    // Localizable text
+                    if ($value = $dialog['text'] ?? $dialog) {
+                        $options['text'] = I18n::translate($value, $value);
+                    }
+
+                    return $options;
+                },
+                'start' => function ($start = null) {
                     return I18n::translate($start, $start);
                 },
-                'stop' => function (?string $stop = null) {
+                'stop' => function ($stop = null) {
                     return I18n::translate($stop, $stop);
                 },
-                'theme' => function (?string $theme = null) {
+                'theme' => function ($theme = null) {
                     return $theme;
-                }
+                },
             ],
             'computed' => [
                 'endpoint' => function () {
@@ -52,12 +78,34 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 },
                 'status' => function () {
                     return terminal($this->script(), $this->model())->toArray();
-                }
+                },
+                'start' => function () {
+                    return $this->start ?? t('lukaskleinschmidt.terminal.start');
+                },
+                'stop' => function () {
+                    return $this->stop ?? t('lukaskleinschmidt.terminal.stop');
+                },
+
+                // The order in which computed props are registered is important
+                'dialog' => function () {
+                    if (is_array($this->dialog) === false) {
+                        return false;
+                    }
+
+                    return array_merge([
+                        'button' => $this->start,
+                        'icon'   => 'wand',
+                        'size'   => 'medium',
+                        'theme'  => 'positive',
+                        'text'   => '',
+                    ], $this->dialog);
+                },
             ],
             'toArray' => function () {
                 return [
                     'options' => [
                         'delay'    => $this->delay,
+                        'dialog'   => $this->dialog,
                         'endpoint' => $this->endpoint,
                         'headline' => $this->headline,
                         'help'     => $this->help,

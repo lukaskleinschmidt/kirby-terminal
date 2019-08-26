@@ -42,19 +42,24 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                         return false;
                     }
 
+                    // Pass down any additional params
+                    if (isset($confirm['text']) === true) {
+                        $options = $confirm;
+                    }
+
                     // Normalize options
                     if (is_array($confirm) === false) {
                         $options['text'] = $confirm;
                     }
 
-                    // Localizable button
-                    if ($value = $confirm['button'] ?? null) {
-                        $options['button'] = I18n::translate($value, $value);
-                    }
-
                     // Localizable text
                     if ($value = $confirm['text'] ?? $confirm) {
                         $options['text'] = I18n::translate($value, $value);
+                    }
+
+                    // Localizable button
+                    if ($value = $confirm['button'] ?? null) {
+                        $options['button'] = I18n::translate($value, $value);
                     }
 
                     return $options;
@@ -106,7 +111,7 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 return [
                     'options' => [
                         'delay'    => $this->delay,
-                        'confirm'   => $this->confirm,
+                        'confirm'  => $this->confirm,
                         'endpoint' => $this->endpoint,
                         'headline' => $this->headline,
                         'help'     => $this->help,

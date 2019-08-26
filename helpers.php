@@ -14,7 +14,7 @@ function terminal($script, $model = null): Terminal
 {
     // Try to find a registered script by name
     $scripts = kirby()->option('lukaskleinschmidt.terminal.scripts');
-    $script = $scripts[$script] ?? $script;
+    $script  = $scripts[$script] ?? $script;
 
     // Create a new script object
     if (is_string($script) == true) {
@@ -22,7 +22,7 @@ function terminal($script, $model = null): Terminal
         return new Terminal($script);
     }
 
-    // Passthru valid scripts
+    // Pass down valid scripts
     if (is_a($script, 'LukasKleinschmidt\Terminal\Script') === true) {
         return new Terminal($script);
     }

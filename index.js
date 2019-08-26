@@ -65,8 +65,8 @@ function parseAnsi(string) {
   // Whether there is a stray open span tag
   let stray = false;
 
-  // Remove everything from the context matching the reset pattern of
-  // the passed code
+  // Remove everything from the context matching the reset pattern of the passed
+  // code
   function reset(code) {
     if (code in patterns == false) return;
     context = context.filter(item => {
@@ -84,8 +84,8 @@ function parseAnsi(string) {
       const value = values[code.trim()] || null;
 
       if (value) {
-        // Because fore and background colors must be unique we reset
-        // any previously set fore or background colors
+        // Because fore and background colors must be unique we reset any
+        // previously set fore or background colors
         [39, 49].some(key => {
 
           // Test if the code matches a fore or background color
@@ -102,9 +102,8 @@ function parseAnsi(string) {
         });
       }
 
-      // When the value is not defined the code either resets the
-      // context with a specific pattern or the sequence is simply
-      // removed from the string
+      // When the value is not defined the code either resets the context with a
+      // specific pattern or the sequence is simply removed from the string
       return reset(code);
     });
 
@@ -138,8 +137,8 @@ panel.plugin('lukaskleinschmidt/terminal', {
           error: null,
           isLoading: false,
           options: {
+            confirm: null,
             delay: null,
-            dialog: null,
             endpoint: null,
             headline: null,
             help: null,
@@ -155,8 +154,21 @@ panel.plugin('lukaskleinschmidt/terminal', {
         }
       },
       computed: {
-        dialog() {
-          return this.options.dialog || {};
+        button() {
+          const text = this.status
+            ? this.options.stop
+            : this.options.start;
+
+          return text || null;
+        },
+        confirm() {
+          return this.options.confirm || null;
+        },
+        headline() {
+          return this.options.headline || null;
+        },
+        help() {
+          return this.options.help || null;
         },
         icon() {
           return this.terminal.status ? 'loader' : 'circle-outline';
@@ -210,7 +222,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
           this.terminal = response;
         },
         handleSubmit() {
-          if (this.status === false && false) {
+          if (this.confirm && this.status === false) {
             return this.$refs.dialog.open();
           }
 
@@ -262,7 +274,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
             .then(this.handleResponse);
         },
         submit() {
-          if (this.$refs.dialog.isOpen) {
+          if (this.confirm && this.$refs.dialog.isOpen) {
             this.$refs.dialog.close();
           }
 
@@ -274,11 +286,11 @@ panel.plugin('lukaskleinschmidt/terminal', {
 
           <header class="k-section-header">
             <k-headline>
-              {{ options.headline }}
+              {{ headline }}
             </k-headline>
 
             <k-button-group v-if="! error">
-              <k-button :icon="icon" @click="handleSubmit">{{ status ? options.stop : options.start }}</k-button>
+              <k-button :icon="icon" @click="handleSubmit">{{ button }}</k-button>
             </k-button-group>
           </header>
 
@@ -293,28 +305,28 @@ panel.plugin('lukaskleinschmidt/terminal', {
 
           <template v-else>
             <div class="terminal-output">
-              <pre ref="output"><code v-html="output" /></pre>
+              <pre ref="output">
+                <code v-html="output" />
+              </pre>
             </div>
 
             <footer class="k-collection-footer">
               <k-text
-                v-if="options.help"
+                v-if="help"
                 theme="help"
                 class="k-collection-help"
-                v-html="options.help"
+                v-html="help"
               />
             </footer>
           </template>
 
           <k-dialog
+            v-if="confirm"
             ref="dialog"
-            v-bind="dialog"
+            v-bind="confirm"
             @submit="submit"
           >
-            <k-text>
-              Do you really want to delete the user:<br>
-              <strong>bastian</strong>?
-            </k-text>
+            <k-text v-html="confirm.text" />
           </k-dialog>
 
         </section>

@@ -34,33 +34,33 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 'help',
             ],
             'props' => [
-                'delay' => function ($delay = 1000) {
-                    return $delay;
-                },
-                'dialog' => function ($dialog = null) {
+                'confirm' => function ($confirm = null) {
                     $options = [];
 
-                    // Disable the dialog
-                    if (is_null($dialog) === true || $dialog === false) {
+                    // Disable the confirm dialog
+                    if (is_null($confirm) === true || $confirm === false) {
                         return false;
                     }
 
                     // Normalize options
-                    if (is_array($dialog) === false) {
-                        $options['text'] = $dialog;
+                    if (is_array($confirm) === false) {
+                        $options['text'] = $confirm;
                     }
 
                     // Localizable button
-                    if ($value = $dialog['button'] ?? null) {
+                    if ($value = $confirm['button'] ?? null) {
                         $options['button'] = I18n::translate($value, $value);
                     }
 
                     // Localizable text
-                    if ($value = $dialog['text'] ?? $dialog) {
+                    if ($value = $confirm['text'] ?? $confirm) {
                         $options['text'] = I18n::translate($value, $value);
                     }
 
                     return $options;
+                },
+                'delay' => function ($delay = 1000) {
+                    return $delay;
                 },
                 'start' => function ($start = null) {
                     return I18n::translate($start, $start);
@@ -87,25 +87,26 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 },
 
                 // The order in which computed props are registered is important
-                'dialog' => function () {
-                    if (is_array($this->dialog) === false) {
+                // when you need them as a dependency
+                'confirm' => function () {
+                    if (is_array($this->confirm) === false) {
                         return false;
                     }
 
                     return array_merge([
                         'button' => $this->start,
-                        'icon'   => 'wand',
-                        'size'   => 'medium',
+                        'icon'   => 'check',
+                        'size'   => 'small',
                         'theme'  => 'positive',
                         'text'   => '',
-                    ], $this->dialog);
+                    ], $this->confirm);
                 },
             ],
             'toArray' => function () {
                 return [
                     'options' => [
                         'delay'    => $this->delay,
-                        'dialog'   => $this->dialog,
+                        'confirm'   => $this->confirm,
                         'endpoint' => $this->endpoint,
                         'headline' => $this->headline,
                         'help'     => $this->help,

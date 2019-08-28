@@ -24,7 +24,6 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
         'gate' => function ($user) {
             return in_array($user->email(), [
                 //
-                // 'l.kleinschmidt@crolla-lowis.de'
             ]);
         }
     ],

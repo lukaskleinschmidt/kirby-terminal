@@ -14,7 +14,7 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
         'scripts' => [
             'deploy' => function () {
                 $root = $this->kirby()->root('content');
-                $path = $this->model()->diruri();
+                $path = $this->diruri();
 
                 return script("rsync -avz --chown=www-data:www-data $root/$path $root/../content-copy/$path --delete");
             },

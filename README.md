@@ -10,7 +10,7 @@ return [
     'lukaskleinschmidt.terminal.scripts' => [
         'deploy' => function () {
             $root = $this->kirby()->root('content');
-            $path = $this->model()->diruri();
+            $path = $this->diruri();
 
             return script("rsync -avz $root/$path user@remote.com:/var/www/html/content/$path --delete");
         }

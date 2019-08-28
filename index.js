@@ -89,6 +89,9 @@ panel.plugin('lukaskleinschmidt/terminal', {
         }
       },
       methods: {
+        handleError(error) {
+          this.terminal.status = false;
+        },
         handleResponse(response) {
           this.terminal = response;
         },
@@ -261,27 +264,26 @@ panel.plugin('lukaskleinschmidt/terminal', {
         },
         start() {
           this.terminal.status = true;
-          this.terminal.stderr = '';
           this.terminal.stdout = '';
 
           // Set the current timestamp
           this.timestamp = Date.now();
 
-          this.$api
-            .post(this.url, { action: 'start' })
-            .then(this.handleResponse);
+          return this.$api.post(this.url, { action: 'start' })
+            .then(this.handleResponse)
+            .catch(this.handleError);
         },
         stop() {
-          this.$api
-            .post(this.url, { action: 'stop' })
-            .then(this.handleResponse);
+          return this.$api.post(this.url, { action: 'stop' })
+            .then(this.handleResponse)
+            .catch(this.handleError);
         },
         submit() {
           if (this.confirm && this.$refs.dialog.isOpen) {
             this.$refs.dialog.close();
           }
 
-          this.status ? this.stop() : this.start();
+          return this.status ? this.stop() : this.start();
         }
       },
       template: `

@@ -21,11 +21,12 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
             'npm' => script('npm run build', kirby()->root('index') . '/test'),
             'php' => script('php -f test.php', __DIR__),
         ],
-        // 'gate' => function ($user) {
-        //     return in_array($user->email(), [
-        //         //
-        //     ]);
-        // }
+        'gate' => function ($user) {
+            return in_array($user->email(), [
+                //
+                // 'l.kleinschmidt@crolla-lowis.de'
+            ]);
+        }
     ],
     'sections' => [
         'terminal' => [
@@ -38,7 +39,7 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                     $options = [];
 
                     // Disable the confirm dialog
-                    if (is_null($confirm) === true || $confirm === false) {
+                    if (! $confirm) {
                         return false;
                     }
 
@@ -52,12 +53,12 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                         $options['text'] = $confirm;
                     }
 
-                    // Localizable text
+                    // Localize text
                     if ($value = $confirm['text'] ?? $confirm) {
                         $options['text'] = I18n::translate($value, $value);
                     }
 
-                    // Localizable button
+                    // Localize button
                     if ($value = $confirm['button'] ?? null) {
                         $options['button'] = I18n::translate($value, $value);
                     }
@@ -94,7 +95,7 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 // The order in which computed props are registered is important
                 // when you need them as a dependency
                 'confirm' => function () {
-                    if (is_array($this->confirm) === false) {
+                    if (! $this->confirm) {
                         return false;
                     }
 
@@ -137,21 +138,31 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
     'api' => [
         'routes' => function ($kirby) {
             $terminal = function () use ($kirby) {
-                $terminal = terminal($this->script(), $this->model());
+                $term = terminal($this->script(), $this->model());
+                $gate = option('lukaskleinschmidt.terminal.gate', true);
+
+                if ($gate !== true && is_callable($gate)) {
+                    $user = $kirby->auth()->user();
+                    $gate = $gate->call($this, $user, $term);
+                }
+
+                if ($gate !== true) {
+                    throw new PermissionException;
+                }
 
                 if ($kirby->request()->is('POST') && $action = get('action')) {
                     switch ($action) {
                         case 'stop':
-                            $terminal->stop();
+                            $term->stop();
                             break;
 
                         case 'start':
-                            $terminal->start();
+                            $term->start();
                             break;
                     }
                 }
 
-                $body = json_encode($terminal->toArray());
+                $body = json_encode($term->toArray());
                 $size = strlen($body);
 
                 echo Response::json($body, null, null, [

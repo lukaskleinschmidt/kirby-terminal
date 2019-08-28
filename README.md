@@ -9,10 +9,10 @@ return [
     'lukaskleinschmidt.terminal.endpoint' => 'terminal',
     'lukaskleinschmidt.terminal.scripts' => [
         'deploy' => function () {
-            $root = $this->kirby()->root('content');
-            $path = $this->diruri();
+            $source = $this->kirby()->root('content') . '/\./' . $this->diruri();
+            $target = 'shh_user@remote-server.com:/var/www/html/content';
 
-            return script("rsync -avz $root/$path user@remote.com:/var/www/html/content/$path --delete");
+            return script("rsync -avz --relative $source $target --delete");
         }
     ],
     'lukaskleinschmidt.terminal.gate' => function ($user) {
@@ -20,7 +20,7 @@ return [
             //
         ]);
     }
-]
+];
 ```
 
 ## Blueprint
@@ -47,6 +47,7 @@ stop     | `string` | `Stop`  | Sets the stop button text
 theme    | `string` | –       | Terminal color theme. Available theme: `dark`
 
 ### Confirmation dialog
+
 ```yml
 # Basic confirmation dialog
 confirm: Are you sure you are ready for this?

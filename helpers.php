@@ -14,25 +14,24 @@ function terminal($script, $model = null): Terminal
 {
     // Try to find a registered script by name
     $scripts = kirby()->option('lukaskleinschmidt.terminal.scripts');
-    $script  = $scripts[$script] ?? $script;
+    $script  = $scripts[$script] ?? null;
+
+    // Create a script with a closure
+    if (is_callable($script) === true) {
+        $script = $script->call($model);
+    }
 
     // Create a new script object from string
-    // if (is_string($script) == true) {
-    //     $script = script($script);
-    //     return new Terminal($script);
-    // }
+    if (is_string($script) === true) {
+        $script = script($script);
+    }
 
-    // Pass down valid scripts
+    // Create a new Terminal
     if (is_a($script, 'LukasKleinschmidt\Terminal\Script') === true) {
         return new Terminal($script);
     }
 
-    // Create a script with a closure
-    if (is_callable($script) === true) {
-        return new Terminal($script->call($model));
-    }
-
-    throw new \Exception('Terminal could not be created');
+    throw new Exception('Terminal could not be created');
 }
 
 /**

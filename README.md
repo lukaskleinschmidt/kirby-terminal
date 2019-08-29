@@ -11,7 +11,7 @@ return [
             $source = $this->kirby()->root('content') . '/\./' . $this->diruri();
             $target = 'shh_user@remote-server.com:/var/www/html/content';
 
-            return script("rsync -avz --relative $source $target --delete");
+            return "rsync -avz --relative $source $target --delete";
         }
     ],
     'lukaskleinschmidt.terminal.gate' => function ($user) {

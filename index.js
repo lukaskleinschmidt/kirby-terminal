@@ -314,9 +314,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
 
           <template v-else>
             <div class="terminal-output">
-              <pre ref="output">
-                <code v-html="output" />
-              </pre>
+              <pre ref="output"><code v-html="output" /></pre>
             </div>
 
             <footer class="k-collection-footer">

@@ -16,7 +16,7 @@
 
 .terminal-output {
   border-radius: 1px;
-  font-family: 'Input', 'Menlo', monospace;
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;
   background: var(--terminal-section-backgrond);
   box-shadow: 0 2px 5px rgba(22, 23, 26, .05);
   overflow: hidden;

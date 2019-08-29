@@ -20,16 +20,7 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
             },
             'npm' => script('npm run build', kirby()->root('index') . '/test'),
             'php' => script('php -f test.php', __DIR__),
-<<<<<<< HEAD
-        ],
-        'gate' => function ($user) {
-            return in_array($user->email(), [
-                //
-            ]);
-        }
-=======
         ]
->>>>>>> Finished gate implementation
     ],
     'sections' => [
         'terminal' => [

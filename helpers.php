@@ -8,7 +8,8 @@ use LukasKleinschmidt\Terminal\Terminal;
  *
  * @param  mixed  $script
  * @param  mixed  $model
- * @return Scripts
+ * @throws Exception
+ * @return Terminal
  */
 function terminal($script, $model = null): Terminal
 {

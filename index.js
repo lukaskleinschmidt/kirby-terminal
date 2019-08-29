@@ -2,7 +2,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
   sections: {
     terminal: {
       inheritAttrs: false,
-      data: function () {
+      data() {
         return {
           autoscroll: true,
           error: null,
@@ -291,7 +291,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
         }
       },
       template: `
-        <section v-if="gate && isLoading === false" :class="['terminal-section', theme]">
+        <section v-if="gate === true && isLoading === false" :class="['terminal-section', theme]">
 
           <header class="k-section-header">
             <k-headline>

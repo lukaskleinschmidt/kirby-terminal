@@ -2,6 +2,8 @@
 
 namespace LukasKleinschmidt\Terminal;
 
+use Exception;
+
 class Process
 {
     /**
@@ -116,6 +118,7 @@ class Process
      * @param  string   $cwd
      * @param  string   $stdout
      * @param  string   $stderr
+     * @throws Exception
      * @return int
      */
     protected static function spawn(string $cmd, string $cwd, string $stdout, ?string $stderr = null): int
@@ -132,7 +135,7 @@ class Process
         ], $pipes, $cwd);
 
         if (is_resource($process) === false) {
-            throw new \Exception('Unable to spawn process');
+            throw new Exception('Unable to spawn process');
         }
 
         $status = proc_get_status($process);

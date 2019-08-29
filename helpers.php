@@ -16,11 +16,11 @@ function terminal($script, $model = null): Terminal
     $scripts = kirby()->option('lukaskleinschmidt.terminal.scripts');
     $script  = $scripts[$script] ?? $script;
 
-    // Create a new script object
-    if (is_string($script) == true) {
-        $script = script($script);
-        return new Terminal($script);
-    }
+    // Create a new script object from string
+    // if (is_string($script) == true) {
+    //     $script = script($script);
+    //     return new Terminal($script);
+    // }
 
     // Pass down valid scripts
     if (is_a($script, 'LukasKleinschmidt\Terminal\Script') === true) {

@@ -20,12 +20,16 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
             },
             'npm' => script('npm run build', kirby()->root('index') . '/test'),
             'php' => script('php -f test.php', __DIR__),
+<<<<<<< HEAD
         ],
         'gate' => function ($user) {
             return in_array($user->email(), [
                 //
             ]);
         }
+=======
+        ]
+>>>>>>> Finished gate implementation
     ],
     'sections' => [
         'terminal' => [
@@ -81,8 +85,25 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 'endpoint' => function () {
                     return option('lukaskleinschmidt.terminal.endpoint');
                 },
+                'gate' => function () {
+                    $gate = option('lukaskleinschmidt.terminal.gate', true);
+
+                    if ($gate !== true && is_callable($gate)) {
+                        $user = $this->kirby()->auth()->user();
+                        $gate = $gate->call($this, $user);
+                    }
+
+                    return $gate;
+                },
                 'status' => function () {
-                    return terminal($this->script(), $this->model())->toArray();
+                    if ($this->gate === true) {
+                        return terminal($this->script(), $this->model())->toArray();
+                    }
+
+                    return [
+                        'status' => false,
+                        'stdout' => '',
+                    ];
                 },
                 'start' => function () {
                     return $this->start ?? t('lukaskleinschmidt.terminal.start');
@@ -113,6 +134,7 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                         'delay'    => $this->delay,
                         'confirm'  => $this->confirm,
                         'endpoint' => $this->endpoint,
+                        'gate'     => $this->gate,
                         'headline' => $this->headline,
                         'help'     => $this->help,
                         'start'    => $this->start,
@@ -137,31 +159,25 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
     'api' => [
         'routes' => function ($kirby) {
             $terminal = function () use ($kirby) {
-                $term = terminal($this->script(), $this->model());
-                $gate = option('lukaskleinschmidt.terminal.gate', true);
+                $terminal = terminal($this->script(), $this->model());
 
-                if ($gate !== true && is_callable($gate)) {
-                    $user = $kirby->auth()->user();
-                    $gate = $gate->call($this, $user, $term);
-                }
-
-                if ($gate !== true) {
+                if ($this->gate !== true) {
                     throw new PermissionException;
                 }
 
                 if ($kirby->request()->is('POST') && $action = get('action')) {
                     switch ($action) {
                         case 'stop':
-                            $term->stop();
+                            $terminal->stop();
                             break;
 
                         case 'start':
-                            $term->start();
+                            $terminal->start();
                             break;
                     }
                 }
 
-                $body = json_encode($term->toArray());
+                $body = json_encode($terminal->toArray());
                 $size = strlen($body);
 
                 echo Response::json($body, null, null, [
@@ -216,6 +232,6 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                     }
                 ]
             ];
-        },
+        }
     ]
 ]);

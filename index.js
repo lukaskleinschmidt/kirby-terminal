@@ -11,6 +11,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
             confirm: null,
             delay: null,
             endpoint: null,
+            gate: null,
             headline: null,
             help: null,
             start: null,
@@ -30,16 +31,19 @@ panel.plugin('lukaskleinschmidt/terminal', {
             ? this.options.stop
             : this.options.start;
 
-          return text || null;
+          return text;
         },
         confirm() {
-          return this.options.confirm || null;
+          return this.options.confirm;
+        },
+        gate() {
+          return this.options.gate;
         },
         headline() {
-          return this.options.headline || null;
+          return this.options.headline;
         },
         help() {
-          return this.options.help || null;
+          return this.options.help;
         },
         icon() {
           return this.terminal.status ? 'loader' : 'circle-outline';
@@ -64,8 +68,8 @@ panel.plugin('lukaskleinschmidt/terminal', {
         this.load()
           .then(response => {
             this.isLoading = false;
-            this.options   = response.options;
-            this.terminal  = response.terminal;
+            this.options  = response.options;
+            this.terminal = response.terminal;
           })
           .catch(error => {
             this.isLoading = false;
@@ -287,7 +291,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
         }
       },
       template: `
-        <section v-if="isLoading === false" :class="['terminal-section', theme]">
+        <section v-if="gate && isLoading === false" :class="['terminal-section', theme]">
 
           <header class="k-section-header">
             <k-headline>

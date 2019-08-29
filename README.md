@@ -1,7 +1,6 @@
 # WIP: Kirby Terminal
 
 ## Configuration
-
 ```php
 <?php
 
@@ -23,8 +22,20 @@ return [
 ];
 ```
 
-## Blueprint
+### Endpoint
+...
 
+
+### Scripts
+Define scripts which you can use in your blueprints.
+`$this` refers to the section model. This can be either the `Site` object or a `Page`, `File` or `User` object.
+
+
+### Gate
+Restrict access to the terminal section if necessary. In addition to the authenticated user `$this` refers to the current section object.
+
+
+## Blueprint
 ```yml
 sections:
   terminal:
@@ -33,8 +44,8 @@ sections:
     script: deploy
 ```
 
-### Available options
 
+### Available options
 Property | Type     | Default | Description
 :--      | :--      | :--     | :--
 confirm  |          | –       | ...
@@ -46,8 +57,8 @@ start    | `string` | `Start` | Sets the start button text
 stop     | `string` | `Stop`  | Sets the stop button text
 theme    | `string` | –       | Terminal color theme. Available theme: `dark`
 
-### Confirmation dialog
 
+### Confirmation dialog
 ```yml
 # Basic confirmation dialog
 confirm: Are you sure you are ready for this?

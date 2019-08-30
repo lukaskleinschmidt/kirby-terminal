@@ -50,6 +50,8 @@ return [
             $source = $this->kirby()->root('content') . '/\./' . $this->diruri();
             $target = 'shh_user@example.com:/var/www/html/content';
 
+            // If you are not 100% certain you have the right path on the remote
+            // server then test this command without the --delete flag first
             return "rsync -avz --relative $source $target --delete";
         }
     ]

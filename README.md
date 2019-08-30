@@ -1,7 +1,7 @@
 # WIP: Kirby Terminal
 
 ### Scripts
-You can define almost any scripts you would normally run from a terminal. A script can be defined as a simple string. If you need more control you can define your script as a callback. The callback is expected to return either a `string` or a `Script` object. The closure of the callback is bound to the scripts section model.
+You can define almost any scripts you would normally run from a terminal. A script can be defined as a simple string or if you need more control you can define your script as a callback. The callback is expected to return either a `string` or a `Script` object. The closure of the callback is bound to the scripts section model.
 
 ```php
 <?php

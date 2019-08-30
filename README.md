@@ -126,11 +126,11 @@ delay    | `int`    | `1000`  | Sets the polling delay
 headline |          | –       | The headline for the section
 help     |          | –       | Sets the help text
 script   | `string` | –       | Sets the executable script
-start    | `string` | `Start` | Sets the start button text
-stop     | `string` | `Stop`  | Sets the stop button text
+start    |          | `Start` | Sets the start button text
+stop     |          | `Stop`  | Sets the stop button text
 theme    | `string` | `light` | Terminal color theme. Available themes: `light`, `dark`
 
-### Confirmation dialog
+### Confirm
 
 ```yml
 # Basic confirmation dialog

@@ -48,7 +48,7 @@ return [
     'lukaskleinschmidt.terminal.scripts' => [
         'deploy' => function () {
             $source = $this->kirby()->root('content') . '/\./' . $this->diruri();
-            $target = 'shh_user@remote-server.com:/var/www/html/content';
+            $target = 'shh_user@example.com:/var/www/html/content';
 
             return "rsync -avz --relative $source $target --delete";
         }
@@ -89,7 +89,7 @@ If you want to disable all scripts for a specific environment set the gate to `f
 
 ```php
 <?php
-// config.remote-server.com.php
+// config.example.com.php
 
 return [
     'lukaskleinschmidt.terminal.gate' => false,

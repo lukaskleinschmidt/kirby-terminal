@@ -57,7 +57,7 @@ return [
 ```
 
 ### Gate
-You may want to restrict access to some scripts. You can do this by adding a gate callback to your config file. Within this callback you have access to the authenticated user. In addition the closure is bound to the section object allowing you to make more fine grained decisions. The following two examples will help you getting started.
+You may want to restrict access to some scripts. You can do this by adding a gate callback to your config file. The callback is expected to return either `true` or `false`. Within the callback you have access to the authenticated user. In addition the closure is bound to the section object allowing you to make more fine grained decisions. The following two examples will help you getting started.
 
 ```php
 <?php
@@ -82,6 +82,17 @@ return [
 
         return in_array($this->script(), $permissions[$user->email()] ?? []);
     }
+];
+```
+
+If you want to disable all scripts for a specific environment set the gate to `false`.
+
+```php
+<?php
+// config.remote-server.com.php
+
+return [
+    'lukaskleinschmidt.terminal.gate' => false,
 ];
 ```
 

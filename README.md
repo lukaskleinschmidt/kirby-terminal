@@ -66,7 +66,7 @@ You may want to restrict access to some scripts. You can do this by adding a gat
 
 return [
     'lukaskleinschmidt.terminal.gate' => function ($user) {
-        return in_array($this->email(), [
+        return in_array($user->email(), [
             'user@example.com'
         ]);
     }

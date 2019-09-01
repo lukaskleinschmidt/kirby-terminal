@@ -52,7 +52,7 @@ return [
 
             // If you are not 100% certain you have the right path on the remote
             // server then test this command without the --delete flag first
-            return "rsync -avz --relative $source $target --delete";
+            return "rsync --delete --relative -avz $source $target";
         }
     ]
 ];
@@ -121,17 +121,16 @@ sections:
 ### Available options
 Property | Type     | Default | Description
 :--      | :--      | :--     | :--
-confirm  |          | –       | Sets the confirmation dialog text
-delay    | `int`    | `1000`  | Sets the polling delay
+confirm  |          | –       | The confirmation text
+delay    | `int`    | `1000`  | The polling delay
 headline |          | –       | The headline for the section
-help     |          | –       | Sets the help text
-script   | `string` | –       | Sets the executable script
-start    |          | `Start` | Sets the start button text
-stop     |          | `Stop`  | Sets the stop button text
-theme    | `string` | `light` | Terminal color theme. Available themes: `light`, `dark`
+help     |          | –       | The help text
+script   | `string` | –       | The executable script
+start    |          | `Start` | The start button text
+stop     |          | `Stop`  | The stop button text
+theme    | `string` | `light` | The theme of the terminal. Available themes are: `light`, `dark`
 
-### Confirm
-
+### Confirmation dialog
 ```yml
 # Basic confirmation dialog
 confirm: Are you sure you are ready for this?
@@ -140,7 +139,23 @@ confirm: Are you sure you are ready for this?
 confirm:
   button: So ready
   icon: wand
-  size: large
-  theme: negative
+  size: medium
+  theme: positive
   text: Are you sure you are ready for this?
+```
+
+Property | Type     | Default | Description
+:--      | :--      | :--     | :--
+button   |          | –       | The text for the submit button. Inherits from the `start` property by default
+icon     | `string` | `check` | The icon type for the submit button
+size     | `string` | `small` | The dialog size. Available sizes are: `small`, `medium`, `large`
+text     |          | –       | The confirmation text
+theme    |          | –       | The theme of the submit button. Available options: `positive`, `negative`
+
+### Multiple languages
+You can provide translations for multiple languages for the `headline`, `help`, `start`, `stop` and `confirm` property. If you are using the advanced confirmation dialog you can also provide translations for the `button` and `text` property.
+```yml
+confirm:
+  en: Are you sure you are ready for this?
+  de: Bist du sicher, dass du bereit bist?
 ```

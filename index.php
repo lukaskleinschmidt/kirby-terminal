@@ -143,7 +143,7 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
             $terminal = function () use ($kirby) {
                 $terminal = terminal($this->script(), $this->model());
 
-                if ($this->gate !== true) {
+                if ($this->gate() !== true) {
                     throw new PermissionException;
                 }
 

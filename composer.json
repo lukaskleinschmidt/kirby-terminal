@@ -1,12 +1,12 @@
 {
-    "name": "lukaskleinschmidt/terminal",
+    "name": "lukaskleinschmidt/kirby-terminal",
     "description": "",
     "type": "kirby-plugin",
     "license": "MIT",
     "authors": [
         {
             "name": "Lukas Kleinschmidt",
-            "email": "you@example.com"
+            "email": "kleinschmidt@eatersvz.de"
         }
     ],
     "require": {

@@ -1,7 +1,25 @@
-# WIP: Kirby Terminal
+# Kirby Terminal
+Manage background processes from the panel. Define scripts like you might already be familiar with from `npm`. Start or stop predefined scripts and monitor the output directly in the panel.
 
-### Scripts
-You can define almost any scripts you would normally run from a terminal. A script can be defined as a simple string or if you need more control you can define your script as a callback. The callback is expected to return either a `string` or a `Script` object. The closure of the callback is bound to the scripts section model.
+![Terminal Preview](http://github.kleinschmidt.at/kirby-terminal/preview.gif)
+
+## Installation
+
+### Download
+Download and copy this repository to `/site/plugins/terminal`.
+
+### Git submodule
+```
+git submodule add https://github.com/lukaskleinschmidt/kirby-terminal.git site/plugins/terminal
+```
+
+### Composer
+```
+composer require lukaskleinschmidt/kirby-terminal
+```
+
+## Define Scripts
+You are able to run almost any scripts or commands you would normally run from a terminal. A script can be defined as a simple string or if you need more control you can define your script as a callback. The callback is expected to return either a `string` or a `Script` object. The closure of the callback is bound to the scripts section model.
 
 ```php
 <?php
@@ -58,7 +76,7 @@ return [
 ];
 ```
 
-### Gate
+## Permissions
 You may want to restrict access to some scripts. You can do this by adding a gate callback to your config file. The callback is expected to return either `true` or `false`. Within the callback you have access to the authenticated user. In addition the closure is bound to the section object allowing you to make more fine grained decisions. The following two examples will help you getting started.
 
 ```php
@@ -98,7 +116,7 @@ return [
 ];
 ```
 
-### Endpoint
+## Endpoint
 You can change the used API endpoint if you run into any conflicts.
 
 ```php
@@ -159,3 +177,11 @@ confirm:
   en: Are you sure you are ready for this?
   de: Bist du sicher, dass du bereit bist?
 ```
+
+## License
+
+MIT
+
+## Credits
+
+- [Lukas Kleinschmidt](https://github.com/lukaskleinschmidt)

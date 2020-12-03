@@ -4,7 +4,7 @@ use LukasKleinschmidt\Terminal\Script;
 use LukasKleinschmidt\Terminal\Terminal;
 
 /**
- * Creates a new Terminal instance
+ * Creates a new Scripts instance
  *
  * @param  mixed  $script
  * @param  mixed  $model

@@ -17,6 +17,30 @@ class Process
     }
 
     /**
+     * Get enviroment variables
+     *
+     * @return array
+     */
+    protected static function env(): array
+    {
+        $env = [];
+
+        foreach ($_SERVER as $key => $value) {
+            if (is_string($value) && false !== $value = getenv($key)) {
+                $env[$key] = $value;
+            }
+        }
+
+        foreach ($_ENV as $key => $value) {
+            if (is_string($value)) {
+                $env[$key] = $value;
+            }
+        }
+
+        return $env;
+    }
+
+    /**
      * Kill a process by pid
      *
      * @param  int    $pid
@@ -28,7 +52,7 @@ class Process
             return shell_exec("taskkill /pid $pid -t -f");
         }
 
-        return shell_exec("kill -TERM -$pid");
+        return shell_exec("kill -- -$(ps -o pgid= $pid | grep -o [0-9]*)");
     }
 
     /**
@@ -37,15 +61,20 @@ class Process
      * @param  Script  $script
      * @param  string  $stdout
      * @param  string  $stderr
+     * @param  array   $env
      * @return int
      */
-    public static function run(Script $script, string $stdout = '/dev/null', ?string $stderr = null): int
-    {
+    public static function run(
+        Script $script,
+        string $stdout = '/dev/null',
+        ?string $stderr = null,
+        array $env = []
+    ): int {
         if (static::isWindows()) {
-            return static::runWindows($script, $stdout, $stderr);
+            return static::runWindows($script, $stdout, $stderr, $env);
         }
 
-        return static::runUnix($script, $stdout, $stderr);
+        return static::runUnix($script, $stdout, $stderr, $env);
     }
 
     /**
@@ -54,22 +83,28 @@ class Process
      * @param  Script  $script
      * @param  string  $stdout
      * @param  string  $stderr
+     * @param  array   $env
      * @return int
      */
-    protected static function runUnix(Script $script, string $stdout, ?string $stderr = null): int
-    {
+    protected static function runUnix(
+        Script $script,
+        string $stdout,
+        ?string $stderr = null,
+        array $env = []
+    ): int {
         // Write the actual pid to file and start a new session to make sure we
         // are able to kill any potential child processes as well
         $file = tmpfile();
         $path = stream_get_meta_data($file)['uri'];
         $cmd  = $script->cmd();
-        $cmd  = "setsid $cmd & echo $! > $path";
+        $cmd  = "$cmd & echo $! > $path";
 
         static::spawn(
             $cmd,
             $script->cwd(),
             $stdout,
-            $stderr
+            $stderr,
+            $env
         );
 
         $size = filesize($path);
@@ -86,10 +121,15 @@ class Process
      * @param  Script  $script
      * @param  string  $stdout
      * @param  string  $stderr
+     * @param  array   $env
      * @return int
      */
-    protected static function runWindows(Script $script, string $stdout, ?string $stderr = null): int
-    {
+    protected static function runWindows(
+        Script $script,
+        string $stdout,
+        ?string $stderr = null,
+        array $env = []
+    ): int {
         $cmd = $script->cmd();
         $cmd = "start /b $cmd";
 
@@ -99,7 +139,8 @@ class Process
             $cmd,
             $script->cwd(),
             $stdout,
-            $stderr
+            $stderr,
+            $env
         );
 
         // Find correct pid
@@ -118,21 +159,29 @@ class Process
      * @param  string   $cwd
      * @param  string   $stdout
      * @param  string   $stderr
+     * @param  array    $env
      * @throws Exception
      * @return int
      */
-    protected static function spawn(string $cmd, string $cwd, string $stdout, ?string $stderr = null): int
-    {
+    protected static function spawn(
+        string $cmd,
+        string $cwd,
+        string $stdout,
+        ?string $stderr = null,
+        array $env = []
+    ): int {
         if (is_null($stderr) === true) {
             $stderr = $stdout;
         }
+
+        $env = array_merge(static::env(), $env);
 
         // Execute the script
         $process = proc_open($cmd, [
             ['pipe', 'r'],
             ['file', $stdout, 'a'],
             ['file', $stderr, 'a'],
-        ], $pipes, $cwd);
+        ], $pipes, $cwd, $env);
 
         if (is_resource($process) === false) {
             throw new Exception('Unable to spawn process');

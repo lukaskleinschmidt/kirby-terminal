@@ -162,11 +162,9 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 $body = json_encode($terminal->toArray());
                 $size = strlen($body);
 
-                echo Response::json($body, null, null, [
+                return Response::json($body, null, null, [
                     'Content-Length' => $size,
                 ]);
-
-                return true;
             };
 
             // Use the desired api endpoint

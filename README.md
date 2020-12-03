@@ -1,10 +1,10 @@
 # Kirby Terminal
 Manage background processes from the panel. Define scripts like you might already be familiar with from `npm`. Start or stop predefined scripts and monitor the output directly in the panel.
 
+![Terminal Preview](http://github.kleinschmidt.at/kirby-terminal/preview.gif)
+
 ## Commercial Usage
 This plugin is free. Please consider to [make a donation](https://www.paypal.me/lukaskleinschmidt) if you use it in a commercial project.
-
-![Terminal Preview](http://github.kleinschmidt.at/kirby-terminal/preview.gif)
 
 ## Installation
 

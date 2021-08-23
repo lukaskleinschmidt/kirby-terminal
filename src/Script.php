@@ -2,8 +2,17 @@
 
 namespace LukasKleinschmidt\Terminal;
 
+use Kirby\Toolkit\Str;
+
 class Script
 {
+    /**
+     * Script bindings
+     *
+     * @var array
+     */
+    protected $bindings;
+
     /**
      * The command
      *
@@ -23,11 +32,13 @@ class Script
      *
      * @param string $cmd
      * @param string $cwd
+     * @param array $bindings
      */
-    public function __construct(string $cmd, string $cwd = null)
+    public function __construct(string $cmd, string $cwd = null, array $bindings = [])
     {
         $this->cmd = $cmd;
         $this->cwd = $cwd ?? getcwd();
+        $this->bindings = $bindings;
     }
 
     /**
@@ -49,7 +60,7 @@ class Script
      */
     public function cmd(): string
     {
-        return $this->cmd;
+        return Str::template($this->cmd, $this->bindings);
     }
 
     /**

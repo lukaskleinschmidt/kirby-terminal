@@ -8,10 +8,11 @@ use LukasKleinschmidt\Terminal\Terminal;
  *
  * @param  mixed  $script
  * @param  mixed  $model
+ * @param  array  $payload
  * @throws Exception
  * @return Terminal
  */
-function terminal($script, $model = null): Terminal
+function terminal($script, $model = null, array $payload = []): Terminal
 {
     // Try to find a registered script by name
     $scripts = kirby()->option('lukaskleinschmidt.terminal.scripts');
@@ -19,7 +20,7 @@ function terminal($script, $model = null): Terminal
 
     // Create a script with a closure
     if (is_callable($script) === true) {
-        $script = $script->call($model);
+        $script = $script->call($model, $payload);
     }
 
     // Create a new script object from string
@@ -40,9 +41,10 @@ function terminal($script, $model = null): Terminal
  *
  * @param  string  $cmd
  * @param  string  $cwd
+ * @param  array  $bindings
  * @return Script
  */
-function script(string $cmd, string $cwd = null): Script
+function script(string $cmd, string $cwd = null, array $bindings = []): Script
 {
-    return new Script($cmd, $cwd ?? kirby()->root('index'));
+    return new Script($cmd, $cwd ?? kirby()->root('index'), $bindings);
 }

@@ -14,6 +14,10 @@
   animation: Spin .9s linear infinite;
 }
 
+.terminal-dialog > .k-dialog-body > .k-text + .k-form {
+  margin-top: 1.25rem;
+}
+
 .terminal-output {
   border-radius: 1px;
   font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;

@@ -8,8 +8,8 @@ panel.plugin('lukaskleinschmidt/terminal', {
           error: null,
           isLoading: false,
           options: {
-            confirm: null,
             delay: null,
+            dialog: null,
             endpoint: null,
             gate: null,
             headline: null,
@@ -18,6 +18,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
             stop: null,
             theme: null,
           },
+          payload: {},
           terminal: {
             status: null,
             stdout: '',
@@ -33,8 +34,8 @@ panel.plugin('lukaskleinschmidt/terminal', {
 
           return text;
         },
-        confirm() {
-          return this.options.confirm;
+        dialog() {
+          return this.options.dialog;
         },
         gate() {
           return this.options.gate;
@@ -61,6 +62,13 @@ panel.plugin('lukaskleinschmidt/terminal', {
         url() {
           return [this.parent, this.options.endpoint, this.name].join('/');
         },
+        validates() {
+          try {
+            return !! Object.keys(this.options.dialog.fields).length;
+          } catch (error) {
+            return false;
+          }
+        },
       },
       created() {
         this.isLoading = true;
@@ -70,10 +78,11 @@ panel.plugin('lukaskleinschmidt/terminal', {
             this.isLoading = false;
             this.options  = response.options;
             this.terminal = response.terminal;
+            this.resetDialog();
           })
           .catch(error => {
             this.isLoading = false;
-            this.error = error.message;
+            this.error = error;
           });
       },
       watch: {
@@ -94,13 +103,14 @@ panel.plugin('lukaskleinschmidt/terminal', {
       },
       methods: {
         handleError(error) {
+          this.error = error;
           this.terminal.status = false;
         },
         handleResponse(response) {
           this.terminal = response;
         },
         handleSubmit() {
-          if (this.confirm && this.status === false) {
+          if (this.dialog && this.status === false) {
             return this.$refs.dialog.open();
           }
 
@@ -243,7 +253,6 @@ panel.plugin('lukaskleinschmidt/terminal', {
           const delay = this.timestamp - now + this.options.delay;
 
           if (delay > 0) {
-
             return setTimeout(this.poll, delay);
           }
 
@@ -266,15 +275,32 @@ panel.plugin('lukaskleinschmidt/terminal', {
             }
           });
         },
+        resetDialog() {
+          try {
+            Object.keys(this.options.dialog.fields).forEach(key => {
+              this.payload[key] = this.options.dialog.fields[key].default;
+            });
+          } catch (error) {
+            // Silence
+          }
+        },
         start() {
-          this.terminal.status = true;
-          this.terminal.stdout = '';
+          if (! this.validates) {
+            this.terminal.status = true;
+            this.terminal.stdout = '';
+          }
 
           // Set the current timestamp
           this.timestamp = Date.now();
 
-          return this.$api.post(this.url, { action: 'start' })
+          return this.$api.post(this.url, {
+              action: 'start',
+              payload: this.payload,
+            })
             .then(this.handleResponse)
+            .then(() => {
+              if (this.dialog) this.$refs.dialog.close();
+            })
             .catch(this.handleError);
         },
         stop() {
@@ -283,7 +309,7 @@ panel.plugin('lukaskleinschmidt/terminal', {
             .catch(this.handleError);
         },
         submit() {
-          if (this.confirm && this.$refs.dialog.isOpen) {
+          if (this.dialog && ! this.validates) {
             this.$refs.dialog.close();
           }
 
@@ -298,16 +324,16 @@ panel.plugin('lukaskleinschmidt/terminal', {
               {{ headline }}
             </k-headline>
 
-            <k-button-group v-if="! error">
+            <k-button-group v-if="! error || error.key === 'error.terminalDialog'">
               <k-button :icon="icon" @click="handleSubmit">{{ button }}</k-button>
             </k-button-group>
           </header>
 
-          <template v-if="error">
+          <template v-if="error && error.key !== 'error.terminalDialog'">
             <k-box theme="negative">
               <k-text size="small">
                 <strong>{{ $t("error.section.notLoaded", { name: name }) }}:</strong>
-                {{ error }}
+                {{ error.message }}
               </k-text>
             </k-box>
           </template>
@@ -328,14 +354,44 @@ panel.plugin('lukaskleinschmidt/terminal', {
           </template>
 
           <k-dialog
-            v-if="confirm"
+            v-if="dialog"
             ref="dialog"
-            v-bind="confirm"
+            v-bind="dialog"
+            class="terminal-dialog"
             @submit="submit"
           >
-            <k-text v-html="confirm.text" />
+            <k-text
+              v-if="dialog.text"
+              v-html="dialog.text"
+            />
+            <k-form
+              v-if="dialog.fields"
+              v-model="payload"
+              :fields="dialog.fields"
+              @submit="submit"
+            />
+            <template v-if="error && error.key === 'error.terminalDialog'">
+              <dl v-if="error.details && Object.keys(error.details).length" class="k-error-details">
+                <template v-for="(detail, index) in error.details">
+                  <dt :key="'detail-label-' + index">
+                    {{ detail.label }}
+                  </dt>
+                  <dd :key="'detail-message-' + index">
+                    <template v-if="typeof detail.message === 'object'">
+                      <ul>
+                        <li v-for="(msg, msgIndex) in detail.message" :key="msgIndex">
+                          {{ msg }}
+                        </li>
+                      </ul>
+                    </template>
+                    <template v-else>
+                      {{ detail.message }}
+                    </template>
+                  </dd>
+                </template>
+              </dl>
+            </template>
           </k-dialog>
-
         </section>
       `
     }

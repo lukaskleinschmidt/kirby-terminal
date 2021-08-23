@@ -1,13 +1,16 @@
 <?php
 
+use Kirby\Cms\App;
+use Kirby\Exception\InvalidArgumentException;
 use Kirby\Http\Response;
 use Kirby\Toolkit\I18n;
 use Kirby\Exception\PermissionException;
+use Kirby\Form\Form;
 
 @include_once __DIR__ . '/vendor/autoload.php';
 @include_once __DIR__ . '/helpers.php';
 
-Kirby::plugin('lukaskleinschmidt/terminal', [
+App::plugin('lukaskleinschmidt/terminal', [
     'options' => [
         'cache' => true,
         'endpoint' => 'terminal',
@@ -20,38 +23,38 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 'help',
             ],
             'props' => [
-                'confirm' => function ($confirm = null) {
+                'delay' => function ($delay = 1000) {
+                    return $delay;
+                },
+                'dialog' => function ($dialog = null) {
                     $options = [];
 
-                    // Disable the confirm dialog
-                    if (! $confirm) {
+                    // Disable the dialog
+                    if (! $dialog) {
                         return false;
                     }
 
                     // Pass down any additional params
-                    if (isset($confirm['text']) === true) {
-                        $options = $confirm;
+                    if (isset($dialog['text']) || isset($dialog['fields'])) {
+                        $options = $dialog;
                     }
 
                     // Normalize options
-                    if (is_array($confirm) === false) {
-                        $options['text'] = $confirm;
+                    if (is_array($dialog) === false) {
+                        $options['text'] = $dialog;
                     }
 
                     // Localize text
-                    if ($value = $confirm['text'] ?? $confirm) {
+                    if ($value = $dialog['text'] ?? null) {
                         $options['text'] = I18n::translate($value, $value);
                     }
 
                     // Localize button
-                    if ($value = $confirm['button'] ?? null) {
+                    if ($value = $dialog['button'] ?? null) {
                         $options['button'] = I18n::translate($value, $value);
                     }
 
                     return $options;
-                },
-                'delay' => function ($delay = 1000) {
-                    return $delay;
                 },
                 'start' => function ($start = null) {
                     return I18n::translate($start, $start);
@@ -70,7 +73,7 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                 'gate' => function () {
                     $gate = option('lukaskleinschmidt.terminal.gate', true);
 
-                    if ($gate !== true && is_callable($gate)) {
+                    if ($gate !== true && $gate instanceof Closure) {
                         $user = $this->kirby()->auth()->user();
                         $gate = $gate->call($this, $user);
                     }
@@ -96,8 +99,8 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
 
                 // The order in which computed props are registered is important
                 // when you need them as a dependency
-                'confirm' => function () {
-                    if (! $this->confirm) {
+                'dialog' => function () {
+                    if (! $this->dialog) {
                         return false;
                     }
 
@@ -107,14 +110,15 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
                         'size'   => 'small',
                         'theme'  => 'positive',
                         'text'   => '',
-                    ], $this->confirm);
+                        'fields' => null,
+                    ], $this->dialog);
                 },
             ],
             'toArray' => function () {
                 return [
                     'options' => [
                         'delay'    => $this->delay,
-                        'confirm'  => $this->confirm,
+                        'dialog'   => $this->dialog,
                         'endpoint' => $this->endpoint,
                         'gate'     => $this->gate,
                         'headline' => $this->headline,
@@ -141,7 +145,26 @@ Kirby::plugin('lukaskleinschmidt/terminal', [
     'api' => [
         'routes' => function ($kirby) {
             $terminal = function () use ($kirby) {
-                $terminal = terminal($this->script(), $this->model());
+
+                $payload = get('payload', []);
+
+                if ($kirby->request()->is('POST') && $dialog = $this->dialog()) {
+                    $form = new Form([
+                        'fields' => $dialog['fields'],
+                        'input' => $payload,
+                        'model' => $this->model(),
+                    ]);
+
+                    if ($form->isInvalid() === true) {
+                        throw new InvalidArgumentException([
+                            'fallback' => 'Invalid form with errors',
+                            'details'  => $form->errors(),
+                            'key'      => 'terminalDialog',
+                        ]);
+                    }
+                }
+
+                $terminal = terminal($this->script(), $this->model(), $payload);
 
                 if ($this->gate() !== true) {
                     throw new PermissionException;

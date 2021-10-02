@@ -353,12 +353,8 @@ export default {
       }
     },
     resetDialog() {
-      try {
-        Object.keys(this.options.dialog.fields).forEach((key) => {
-          this.payload[key] = this.options.dialog.fields[key].default;
-        });
-      } catch (error) {
-        // Silence
+      for (const key of Object.keys(this.options?.dialog?.fields ?? {})) {
+        this.payload[key] = this.options.dialog.fields[key].default;
       }
     },
     async start() {

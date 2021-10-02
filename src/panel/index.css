@@ -11,7 +11,7 @@
 }
 
 .terminal-section .k-icon-loader {
-  animation: Spin .9s linear infinite;
+  animation: Spin 0.9s linear infinite;
 }
 
 .terminal-dialog > .k-dialog-body > .k-text + .k-form {
@@ -20,9 +20,10 @@
 
 .terminal-output {
   border-radius: 1px;
-  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier,
+    monospace;
   background: var(--terminal-section-backgrond);
-  box-shadow: 0 2px 5px rgba(22, 23, 26, .05);
+  box-shadow: 0 2px 5px rgba(22, 23, 26, 0.05);
   overflow: hidden;
   color: var(--terminal-section-color);
 }
@@ -38,7 +39,7 @@
   line-height: 1.1;
   font-size: 12px;
   display: block;
-  padding: .75rem;
+  padding: 0.75rem;
 }
 
 .terminal-output {
@@ -66,7 +67,7 @@
 }
 
 .terminal-output .term-faint {
-  opacity: .5;
+  opacity: 0.5;
 }
 
 .terminal-output .term-italic {

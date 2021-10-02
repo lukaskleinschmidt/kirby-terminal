@@ -1,6 +1,5 @@
 {
     "name": "lukaskleinschmidt/kirby-terminal",
-    "description": "",
     "type": "kirby-plugin",
     "license": "MIT",
     "authors": [
@@ -10,7 +9,7 @@
         }
     ],
     "require": {
-        "getkirby/composer-installer": "^1.1"
+        "getkirby/composer-installer": "^1.2"
     },
     "autoload": {
         "psr-4": {

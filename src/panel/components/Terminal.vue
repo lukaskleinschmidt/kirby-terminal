@@ -140,11 +140,7 @@ export default {
       return [this.parent, this.options.endpoint, this.name].join("/");
     },
     validates() {
-      try {
-        return !!Object.keys(this.options.dialog.fields).length;
-      } catch (error) {
-        return false;
-      }
+      return !!Object.keys(this.options?.dialog?.fields ?? {}).length;
     },
   },
 

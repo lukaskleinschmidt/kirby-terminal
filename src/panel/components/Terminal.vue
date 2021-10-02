@@ -109,9 +109,7 @@ export default {
 
   computed: {
     button() {
-      const text = this.status ? this.options.stop : this.options.start;
-
-      return text;
+      return this.status ? this.options.stop : this.options.start;
     },
     dialog() {
       return this.options.dialog;
@@ -167,20 +165,19 @@ export default {
     },
   },
 
-  created() {
+  async created() {
     this.isLoading = true;
 
-    this.load()
-      .then((response) => {
-        this.isLoading = false;
-        this.options = response.options;
-        this.terminal = response.terminal;
-        this.resetDialog();
-      })
-      .catch((error) => {
-        this.isLoading = false;
-        this.error = error;
-      });
+    try {
+      const response = await this.load();
+      this.isLoading = false;
+      this.options = response.options;
+      this.terminal = response.terminal;
+      this.resetDialog();
+    } catch (error) {
+      this.isLoading = false;
+      this.error = error;
+    }
   },
 
   methods: {
@@ -333,7 +330,7 @@ export default {
 
       return string;
     },
-    poll() {
+    async poll() {
       const now = Date.now();
       const delay = this.timestamp - now + this.options.delay;
 
@@ -344,21 +341,20 @@ export default {
       // Set the current timestamp
       this.timestamp = now;
 
-      this.$api.get(this.url, null, {}, true).then((response) => {
-        const element = this.$refs.output;
-        const { offsetHeight, scrollTop, scrollHeight } = element;
+      const response = await this.$api.get(this.url, null, {}, true);
+      const element = this.$refs.output;
+      const { offsetHeight, scrollTop, scrollHeight } = element;
 
-        // Figure out whether autoscroll should kick in or not
-        this.autoscroll = offsetHeight + scrollTop > scrollHeight - 20;
+      // Figure out whether autoscroll should kick in or not
+      this.autoscroll = offsetHeight + scrollTop > scrollHeight - 20;
 
-        // Update data
-        this.handleResponse(response);
+      // Update data
+      this.handleResponse(response);
 
-        // Continue polling
-        if (this.status === true) {
-          this.poll();
-        }
-      });
+      // Continue polling
+      if (this.status === true) {
+        this.poll();
+      }
     },
     resetDialog() {
       try {
@@ -369,7 +365,7 @@ export default {
         // Silence
       }
     },
-    start() {
+    async start() {
       if (!this.validates) {
         this.terminal.status = true;
         this.terminal.stdout = "";
@@ -378,29 +374,31 @@ export default {
       // Set the current timestamp
       this.timestamp = Date.now();
 
-      return this.$api
-        .post(this.url, {
+      try {
+        const response = await this.$api.post(this.url, {
           action: "start",
           payload: this.payload,
-        })
-        .then(this.handleResponse)
-        .then(() => {
-          if (this.dialog) this.$refs.dialog.close();
-        })
-        .catch(this.handleError);
+        });
+        this.handleResponse(response);
+        if (this.dialog) this.$refs.dialog.close();
+      } catch (error) {
+        this.handleError(error);
+      }
     },
-    stop() {
-      return this.$api
-        .post(this.url, { action: "stop" })
-        .then(this.handleResponse)
-        .catch(this.handleError);
+    async stop() {
+      try {
+        const response = await this.$api.post(this.url, { action: "stop" });
+        this.handleResponse(response);
+      } catch (error) {
+        this.handleError(error);
+      }
     },
     submit() {
       if (this.dialog && !this.validates) {
         this.$refs.dialog.close();
       }
 
-      return this.status ? this.stop() : this.start();
+      this.status ? this.stop() : this.start();
     },
   },
 };

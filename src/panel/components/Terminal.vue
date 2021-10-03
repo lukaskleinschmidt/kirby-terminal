@@ -57,10 +57,10 @@
           class="k-error-details"
         >
           <template v-for="(detail, index) in error.details">
-            <dt :key="'detail-label-' + index">
+            <dt :key="`detail-label-${index}`">
               {{ detail.label }}
             </dt>
-            <dd :key="'detail-message-' + index">
+            <dd :key="`detail-message-${index}`">
               <template v-if="typeof detail.message === 'object'">
                 <ul>
                   <li v-for="(msg, msgIndex) in detail.message" :key="msgIndex">
@@ -133,8 +133,8 @@ export default {
       return this.terminal.status;
     },
     theme() {
-      const theme = this.options.theme;
-      return theme ? "terminal-section-" + theme : "";
+      const { theme } = this.options;
+      return theme ? `terminal-section-${theme}` : "";
     },
     url() {
       return [this.parent, this.options.endpoint, this.name].join("/");
@@ -146,15 +146,15 @@ export default {
 
   watch: {
     output() {
-      if (this.autoscroll) {
-        const element = this.$refs.output || null;
+      if (!this.autoscroll) return;
 
-        if (!element) return;
+      const element = this.$refs.output ?? null;
 
-        this.$nextTick(() => {
-          element.scrollTo(0, element.scrollHeight);
-        });
-      }
+      if (!element) return;
+
+      this.$nextTick(() => {
+        element.scrollTo(0, element.scrollHeight);
+      });
     },
     status(status) {
       if (status) this.poll();
@@ -263,7 +263,7 @@ export default {
       // Remove everything from the context matching the reset pattern of
       // the passed code
       function reset(code) {
-        if (code in patterns == false) return;
+        if (!(code in patterns)) return;
         context = context.filter((item) => {
           return patterns[code].test(item.code) === false;
         });
@@ -276,7 +276,7 @@ export default {
           // Only handle sequences that modify the appearance
           if (type !== "m") return "";
 
-          codes.split(";").forEach((code) => {
+          for (const code of codes.split(";")) {
             const value = values[code.trim()] || null;
 
             if (value) {
@@ -301,7 +301,7 @@ export default {
             // context with a specific pattern or the sequence is simply
             // removed from the string
             return reset(code);
-          });
+          };
 
           let result = "";
 
@@ -337,7 +337,6 @@ export default {
       // Set the current timestamp
       this.timestamp = now;
 
-      const response = await this.$api.get(this.url, null, {}, true);
       const element = this.$refs.output;
       const { offsetHeight, scrollTop, scrollHeight } = element;
 
@@ -345,6 +344,7 @@ export default {
       this.autoscroll = offsetHeight + scrollTop > scrollHeight - 20;
 
       // Update data
+      const response = await this.$api.get(this.url, null, {}, true);
       this.handleResponse(response);
 
       // Continue polling

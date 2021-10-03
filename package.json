@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "watch": "kirbyup src/index.js --watch",
+    "build": "kirbyup src/index.js",
+    "format": "prettier --write \"src/**/*.{js,vue}\""
+  },
+  "devDependencies": {
+    "kirbyup": "^0.12.1",
+    "prettier": "^2.4.1"
+  }
+}

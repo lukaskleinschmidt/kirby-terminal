@@ -11,7 +11,7 @@ return array(
     'Kirby\\ComposerInstaller\\Installer' => $vendorDir . '/getkirby/composer-installer/src/ComposerInstaller/Installer.php',
     'Kirby\\ComposerInstaller\\Plugin' => $vendorDir . '/getkirby/composer-installer/src/ComposerInstaller/Plugin.php',
     'Kirby\\ComposerInstaller\\PluginInstaller' => $vendorDir . '/getkirby/composer-installer/src/ComposerInstaller/PluginInstaller.php',
-    'LukasKleinschmidt\\Terminal\\Process' => $baseDir . '/src/Process.php',
-    'LukasKleinschmidt\\Terminal\\Script' => $baseDir . '/src/Script.php',
-    'LukasKleinschmidt\\Terminal\\Terminal' => $baseDir . '/src/Terminal.php',
+    'LukasKleinschmidt\\Terminal\\Process' => $baseDir . '/classes/LukasKleinschmidt/Process.php',
+    'LukasKleinschmidt\\Terminal\\Script' => $baseDir . '/classes/LukasKleinschmidt/Script.php',
+    'LukasKleinschmidt\\Terminal\\Terminal' => $baseDir . '/classes/LukasKleinschmidt/Terminal.php',
 );

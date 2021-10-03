@@ -1,23 +1,26 @@
 {
-    "name": "lukaskleinschmidt/kirby-terminal",
-    "description": "",
-    "type": "kirby-plugin",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Lukas Kleinschmidt",
-            "email": "kleinschmidt@eatersvz.de"
-        }
-    ],
-    "require": {
-        "getkirby/composer-installer": "^1.1"
-    },
-    "autoload": {
-        "psr-4": {
-            "LukasKleinschmidt\\Terminal\\": "src/"
-        }
-    },
-    "config": {
-        "optimize-autoloader": true
+  "name": "lukaskleinschmidt/kirby-terminal",
+  "description": "Manage background processes from the Kirby Panel",
+  "type": "kirby-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Lukas Kleinschmidt",
+      "email": "kleinschmidt@eatersvz.de"
     }
+  ],
+  "require": {
+    "getkirby/composer-installer": "^1.2"
+  },
+  "autoload": {
+    "files": [
+      "helpers.php"
+    ],
+    "psr-4": {
+      "LukasKleinschmidt\\Terminal\\": "classes/LukasKleinschmidt/"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
 }

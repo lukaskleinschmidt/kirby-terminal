@@ -277,7 +277,7 @@ export default {
           if (type !== "m") return "";
 
           for (const code of codes.split(";")) {
-            const value = values[code.trim()] || null;
+            const value = values[code.trim()];
 
             if (value) {
               // Because fore and background colors must be unique we resets
@@ -291,17 +291,19 @@ export default {
               });
 
               // Add the value to the current context
-              return context.push({
-                value: value,
-                code: code,
+              context.push({
+                value,
+                code,
               });
+
+              continue;
             }
 
             // When the value is not defined the code either resets the
             // context with a specific pattern or the sequence is simply
             // removed from the string
-            return reset(code);
-          };
+            reset(code);
+          }
 
           let result = "";
 

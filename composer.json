@@ -17,7 +17,7 @@
       "helpers.php"
     ],
     "psr-4": {
-      "LukasKleinschmidt\\Terminal\\": "src/"
+      "LukasKleinschmidt\\Terminal\\": "classes/LukasKleinschmidt/"
     }
   },
   "config": {

@@ -6,6 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'LukasKleinschmidt\\Terminal\\' => array($baseDir . '/src'),
+    'LukasKleinschmidt\\Terminal\\' => array($baseDir . '/classes/LukasKleinschmidt'),
     'Kirby\\' => array($vendorDir . '/getkirby/composer-installer/src'),
 );

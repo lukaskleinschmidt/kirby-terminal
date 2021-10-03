@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "watch": "kirbyup src/panel/index.js --watch",
-    "build": "kirbyup src/panel/index.js",
+    "watch": "kirbyup src/index.js --watch",
+    "build": "kirbyup src/index.js",
     "format": "prettier --write \"src/**/*.{js,vue}\""
   },
   "devDependencies": {
